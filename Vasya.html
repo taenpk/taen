@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAKE UP VASYA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-green: #00ff41;
+            --neon-red: #ff003c;
+            --dark-bg: #050505;
+            --panel-bg: rgba(20, 20, 20, 0.9);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Matrix Rain Canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .cyber-panel {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            backdrop-filter: blur(5px);
+            clip-path: polygon(
+                0 10px, 10px 0, 
+                100% 0, 100% calc(100% - 10px), 
+                calc(100% - 10px) 100%, 0 100%
+            );
+        }
+
+        .cyber-btn {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            transition: all 0.3s;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 90% 100%, 0 100%);
+        }
+
+        .cyber-btn:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .cyber-btn-red {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+        .cyber-btn-red:hover {
+            background: var(--neon-red);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-red);
+        }
+
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 31px, 0); }
+            20% { clip: rect(60px, 9999px, 83px, 0); }
+            40% { clip: rect(20px, 9999px, 99px, 0); }
+            60% { clip: rect(5px, 9999px, 45px, 0); }
+            80% { clip: rect(80px, 9999px, 10px, 0); }
+            100% { clip: rect(30px, 9999px, 60px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(55px, 9999px, 10px, 0); }
+            20% { clip: rect(15px, 9999px, 80px, 0); }
+            40% { clip: rect(90px, 9999px, 30px, 0); }
+            60% { clip: rect(10px, 9999px, 50px, 0); }
+            80% { clip: rect(40px, 9999px, 70px, 0); }
+            100% { clip: rect(70px, 9999px, 20px, 0); }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-green); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-24">
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <div id="app" class="relative z-10 flex-grow flex items-center justify-center p-4">
+        
+        <!-- SCREEN 1: INTRO -->
+        <div id="screen-intro" class="text-center w-full max-w-2xl fade-in">
+            <div class="mb-8 relative inline-block">
+                <div class="w-32 h-32 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(0,255,65,0.3)] animate-pulse bg-black">
+                    <i class="fas fa-power-off text-5xl text-green-500"></i>
+                </div>
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-black text-white mb-2 glitch-text" data-text="VASILY">VASILY</h1>
+            <p class="text-green-500 text-xl tracking-[0.5em] mb-8 uppercase font-bold">System Override: 28.03.1991</p>
+            
+            <div class="cyber-panel p-6 mb-10 max-w-md mx-auto text-left">
+                <p class="text-gray-400 font-mono text-sm mb-2">> Detecting Life Signs...</p>
+                <p class="text-gray-400 font-mono text-sm mb-2">> Solar Sign: <span class="text-red-500 font-bold">ARIES (Овен)</span> [Detected]</p>
+                <p class="text-gray-400 font-mono text-sm mb-2">> Moon Sign: <span class="text-blue-400 font-bold">VIRGO (Дева)</span> [Detected]</p>
+                <p class="text-green-500 font-mono text-sm blink">> STATUS: POTENTIAL UNLEASHED</p>
+            </div>
+
+            <button onclick="startLevel()" class="cyber-btn px-12 py-6 text-xl font-bold w-full md:w-auto">
+                INITIALIZE <i class="fas fa-terminal ml-2"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 2: ACTION QUEST -->
+        <div id="screen-quest" class="hidden w-full max-w-2xl">
+            <div class="cyber-panel p-8 md:p-12">
+                <div class="flex justify-between text-xs text-green-500 font-mono mb-6 border-b border-green-900 pb-2">
+                    <span>QUEST_LOG_00<span id="q-num">1</span></span>
+                    <span>ENERGY: <span id="energy-level">100%</span></span>
+                </div>
+
+                <h3 id="q-text" class="text-2xl md:text-3xl font-bold mb-10 text-white leading-tight"></h3>
+
+                <div id="q-options" class="grid gap-4"></div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: CHART (HOROSCOPE) -->
+        <div id="screen-chart" class="hidden w-full max-w-6xl fade-in pb-10">
+            <h2 class="text-4xl text-center mb-10 cyber-font text-green-500 glitch-text" data-text="ANALYSIS COMPLETE">ANALYSIS COMPLETE</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sun -->
+                <div onclick="openModal('sun')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border-l-4 border-l-red-500">
+                    <i class="fas fa-fire text-red-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-1">ДВИЖОК (Солнце)</h3>
+                    <p class="text-gray-400 text-sm">Овен. Чистая энергия.</p>
+                </div>
+                <!-- Moon -->
+                <div onclick="openModal('moon')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border-l-4 border-l-blue-500">
+                    <i class="fas fa-brain text-blue-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-1">ПРОЦЕССОР (Луна)</h3>
+                    <p class="text-gray-400 text-sm">Дева. Логика и анализ.</p>
+                </div>
+                <!-- Mars -->
+                <div onclick="openModal('mars')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border-l-4 border-l-yellow-500">
+                    <i class="fas fa-bolt text-yellow-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-1">ДЕЙСТВИЕ (Марс)</h3>
+                    <p class="text-gray-400 text-sm">Близнецы. Скорость.</p>
+                </div>
+                <!-- Venus -->
+                <div onclick="openModal('venus')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border-l-4 border-l-green-500">
+                    <i class="fas fa-gem text-green-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-1">КЭШ (Венера)</h3>
+                    <p class="text-gray-400 text-sm">Телец. Любовь к деньгам.</p>
+                </div>
+                <!-- Mercury -->
+                <div onclick="openModal('mercury')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border-l-4 border-l-purple-500">
+                    <i class="fas fa-network-wired text-purple-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-1">СВЯЗЬ (Меркурий)</h3>
+                    <p class="text-gray-400 text-sm">Овен. Прямая речь.</p>
+                </div>
+                <!-- Chart Visual -->
+                <div onclick="openModal('chart')" class="cyber-panel p-6 hover:bg-white/5 cursor-pointer transition-colors border border-green-500 flex flex-col items-center justify-center text-center">
+                    <i class="fas fa-globe text-4xl text-green-500 mb-2 animate-pulse"></i>
+                    <h3 class="text-lg font-bold">СХЕМА СБОРКИ</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: MESSAGE (SECRET) -->
+        <div id="screen-message" class="hidden w-full max-w-2xl fade-in flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <div class="cyber-panel p-10 border-2 border-green-500 relative">
+                <div class="absolute top-0 left-0 bg-green-500 text-black px-4 py-1 font-bold text-xs">INCOMING TRANSMISSION</div>
+                
+                <i class="fas fa-sack-dollar text-6xl text-green-500 mb-6 animate-bounce"></i>
+                
+                <h2 class="text-3xl font-black mb-6 uppercase text-white">ВАСЯ, БРО!</h2>
+                
+                <p class="text-xl md:text-2xl text-gray-200 leading-relaxed font-mono mb-8">
+                    "Не тупи.<br>
+                    Пиши, звони.<br>
+                    <span class="text-green-400 font-bold bg-green-900/30 px-2">ПОГНАЛИ ДЕНЬГИ ДЕЛАТЬ.</span><br>
+                    <br>
+                    Есть несколько очень крутых идей поднять кэш перед НГ."
+                </p>
+
+                <a href="https://t.me/" target="_blank" class="cyber-btn px-8 py-4 inline-block no-underline">
+                    СВЯЗАТЬСЯ <i class="fas fa-paper-plane"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" onclick="closeModal()">
+        <div class="cyber-panel p-8 max-w-2xl w-full relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-2 right-4 text-green-500 text-2xl">&times;</button>
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-green-500 cyber-font"></h3>
+            <div id="modal-content" class="text-lg text-gray-300 font-mono leading-relaxed space-y-4"></div>
+            <div id="chart-visual" class="hidden w-64 h-64 mt-6 mx-auto"></div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div id="nav-bar" class="fixed bottom-0 left-0 w-full z-40 p-0 transform translate-y-full transition-transform duration-500">
+        <div class="bg-black/90 border-t border-green-900 p-4 flex justify-around items-center backdrop-blur-md">
+            <button onclick="goToScreen('screen-chart')" class="text-gray-500 hover:text-green-500 flex flex-col items-center uppercase text-xs font-bold tracking-widest transition-colors">
+                <i class="fas fa-chart-pie text-xl mb-1"></i> Анализ
+            </button>
+            
+            <button onclick="restartLevel()" class="w-14 h-14 -mt-10 bg-black border-2 border-green-500 rounded-full flex items-center justify-center text-green-500 shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:scale-110 transition-transform">
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <button onclick="goToScreen('screen-message')" class="text-gray-500 hover:text-green-500 flex flex-col items-center uppercase text-xs font-bold tracking-widest transition-colors">
+                <i class="fas fa-envelope-open-text text-xl mb-1"></i> ТЕМА
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const questData = [
+            {
+                text: "Будильник звонит. На часах 6:00. Твои действия?",
+                options: [
+                    { text: "Встать и разорвать этот день", type: "action" },
+                    { text: "Перевести на 10 минут (анализ снов)", type: "wait" }
+                ]
+            },
+            {
+                text: "Появилась идея на миллион. Но есть риски. Что делаем?",
+                options: [
+                    { text: "Рискуем! Овен не боится огня", type: "action" },
+                    { text: "Считаем смету в Excel (Дева стайл)", type: "wait" }
+                ]
+            },
+            {
+                text: "Друг предлагает мутную, но прибыльную тему. Ты...",
+                options: [
+                    { text: "В деле! Разберемся по ходу", type: "action" },
+                    { text: "Читаю договор мелким шрифтом", type: "wait" }
+                ]
+            },
+            {
+                text: "В пятницу вечером ты...",
+                options: [
+                    { text: "Нетворкинг / Движ", type: "action" },
+                    { text: "Дома, порядок, планы", type: "wait" }
+                ]
+            },
+            {
+                text: "Выбирай свою пилюлю, Нео:",
+                options: [
+                    { text: "СИНЯЯ: Посмотреть, кто я (Гороскоп)", end: "chart" },
+                    { text: "КРАСНАЯ: Узнать правду (Секретное послание)", end: "msg" }
+                ]
+            }
+        ];
+
+        const astroData = {
+            sun: {
+                title: "СОЛНЦЕ В ОВНЕ ♈",
+                text: `<p>Бро, ты — Овен. Это значит, что твой движок работает на ракетном топливе. Ты прирожденный лидер, стартапер и первопроходец.</p>
+                       <p>Твоя суперсила — ИМПУЛЬС. Пока другие думают, ты уже делаешь. Но...</p>`
+            },
+            moon: {
+                title: "ЛУНА В ДЕВЕ ♍",
+                text: `<p>...вот тут собака зарыта. Твоя Луна в Деве — это твой внутренний бухгалтер. Она заставляет тебя сомневаться, перепроверять, искать идеальный момент.</p>
+                       <p class="text-green-500 font-bold">СОВЕТ: Отключай внутреннего критика. Твой Овен должен вести, а Дева — просто подносить патроны, а не рулить.</p>`
+            },
+            mars: {
+                title: "МАРС В БЛИЗНЕЦАХ ♊",
+                text: `<p>Ты действуешь быстро и можешь делать 10 дел одновременно. Тебе скучно делать одно и то же. Тебе нужны быстрые схемы, общение, информация.</p>`
+            },
+            venus: {
+                title: "ВЕНЕРА В ТЕЛЬЦЕ ♉",
+                text: `<p>Ты любишь комфорт и деньги. Венера в Тельце — это самое "денежное" положение. У тебя есть чуйка на то, где лежат бабки. И ты умеешь их сохранять.</p>`
+            },
+            mercury: {
+                title: "МЕРКУРИЙ В ОВНЕ ♈",
+                text: `<p>Ты говоришь прямо, мыслишь быстро. Не любишь долгие вступления. Твой мозг генерирует идеи пулеметной очередью.</p>`
+            },
+            chart: {
+                title: "КАРТА СБОРКИ 28.03.1991",
+                text: `<p>Мощная комбинация. Огонь (Идея) + Земля (Реализация).</p><p>Главное — не зависать в анализе (Дева), когда надо рвать (Овен).</p>`,
+                isChart: true
+            }
+        };
+
+        let currentQ = 0;
+
+        // --- LOGIC ---
+
+        function startLevel() {
+            switchScreen('screen-intro', 'screen-quest');
+            document.getElementById('nav-bar').classList.remove('translate-y-full');
+            loadQ();
+        }
+
+        function loadQ() {
+            const data = questData[currentQ];
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('q-text').innerText = data.text;
+            
+            const div = document.getElementById('q-options');
+            div.innerHTML = '';
+            
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                // Styling logic for red/blue pill
+                let colorClass = "cyber-btn";
+                if(opt.text.includes("КРАСНАЯ")) colorClass = "cyber-btn cyber-btn-red";
+                
+                btn.className = `${colorClass} py-4 px-6 text-left w-full font-bold text-lg hover:pl-8 transition-all`;
+                btn.innerHTML = `> ${opt.text}`;
+                
+                btn.onclick = () => {
+                    if (opt.end) {
+                        if(opt.end === 'msg') goToScreen('screen-message');
+                        else goToScreen('screen-chart');
+                    } else {
+                        currentQ++;
+                        loadQ();
+                    }
+                };
+                div.appendChild(btn);
+            });
+        }
+
+        function switchScreen(from, to) {
+            document.getElementById(from).classList.add('hidden');
+            const target = document.getElementById(to);
+            target.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function goToScreen(id) {
+            ['screen-intro', 'screen-quest', 'screen-chart', 'screen-message'].forEach(s => 
+                document.getElementById(s).classList.add('hidden')
+            );
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function restartLevel() {
+            currentQ = 0;
+            goToScreen('screen-quest');
+            loadQ();
+        }
+
+        // --- MODAL ---
+        function openModal(key) {
+            const d = astroData[key];
+            const m = document.getElementById('modal');
+            document.getElementById('modal-title').innerText = d.title;
+            document.getElementById('modal-content').innerHTML = d.text;
+            
+            const chartViz = document.getElementById('chart-visual');
+            if(d.isChart) {
+                chartViz.classList.remove('hidden');
+                renderSVG();
+            } else {
+                chartViz.classList.add('hidden');
+            }
+            
+            m.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // --- MATRIX RAIN ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const cols = Math.floor(width / 20);
+        const ypos = Array(cols).fill(0);
+
+        function matrix() {
+            ctx.fillStyle = '#0001';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = '15pt monospace';
+
+            ypos.forEach((y, ind) => {
+                const text = String.fromCharCode(Math.random() * 128);
+                const x = ind * 20;
+                ctx.fillText(text, x, y);
+                if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+                else ypos[ind] = y + 20;
+            });
+        }
+        setInterval(matrix, 50);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // --- SVG CHART (Approx Positions 28.03.1991) ---
+        function renderSVG() {
+            const div = document.getElementById('chart-visual');
+            // Sun Aries 7 deg -> 7
+            // Moon Virgo ~20 deg -> 170
+            // Mars Gemini -> 70
+            const svg = `
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-[spin_60s_linear_infinite]">
+                <circle cx="100" cy="100" r="95" stroke="#0f0" stroke-width="1" fill="none" opacity="0.5"/>
+                <line x1="100" y1="5" x2="100" y2="195" stroke="#0f0" opacity="0.2"/>
+                <line x1="5" y1="100" x2="195" y2="100" stroke="#0f0" opacity="0.2"/>
+                
+                <!-- Sun Aries -->
+                <g transform="rotate(7 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="10" stroke="red" stroke-width="2"/>
+                   <circle cx="100" cy="10" r="5" fill="red"/>
+                </g>
+                <!-- Moon Virgo -->
+                <g transform="rotate(160 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="20" stroke="blue" stroke-width="1"/>
+                   <circle cx="100" cy="20" r="4" fill="blue"/>
+                </g>
+                 <!-- Mars Gemini -->
+                <g transform="rotate(70 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="30" stroke="yellow" stroke-width="1"/>
+                   <circle cx="100" cy="30" r="4" fill="yellow"/>
+                </g>
+                <circle cx="100" cy="100" r="3" fill="#0f0"/>
+            </svg>`;
+            div.innerHTML = svg;
+        }
+
+    </script>
+</body>
+</html>
