@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IRINA'S GARDEN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap');
+
+        :root {
+            --primary-gold: #d4af37;
+            --deep-green: #1a472a;
+            --soft-cream: #f9f5eb;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background-color: #0c1f13;
+            color: var(--soft-cream);
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1f3d2b 0%, #050f09 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .elegant-font { font-family: 'Playfair Display', serif; }
+        .handwritten-font { font-family: 'Great Vibes', cursive; }
+
+        /* Canvas for petals */
+        #petals-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(20, 40, 30, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            position: relative;
+        }
+        
+        .gold-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+            color: #0c1f13;
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+        }
+        .gold-btn:active { transform: scale(0.96); }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            transition: all 0.3s;
+        }
+        .option-btn:active { background: rgba(212, 175, 55, 0.15); }
+
+        /* Cookie Animation */
+        @keyframes crack {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: scale(1.1); opacity: 0; }
+        }
+        .cracking { animation: crack 0.6s forwards; }
+
+        /* Note Appear Animation */
+        @keyframes noteUnfold {
+            0% { transform: scaleY(0.1) scaleX(0.5); opacity: 0; }
+            50% { transform: scaleY(1) scaleX(0.5); opacity: 0.8; }
+            100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+        }
+        .note-appear { animation: noteUnfold 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .fade-in { animation: fadeIn 1s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0c1f13; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 2px; }
+    </style>
+</head>
+<body class="flex flex-col pb-32">
+
+    <canvas id="petals-canvas"></canvas>
+
+    <div id="app" class="relative z-10 flex-grow flex items-center justify-center p-6">
+        
+        <!-- SCREEN 1: INTRO -->
+        <div id="screen-intro" class="text-center w-full max-w-2xl fade-in">
+            <div class="mb-10 relative inline-block">
+                <div class="w-36 h-36 rounded-full border border-yellow-600/40 flex items-center justify-center mx-auto bg-black/20 backdrop-blur-sm relative shadow-[0_0_30px_rgba(212,175,55,0.15)]">
+                    <i class="fas fa-spa text-6xl text-[#d4af37] opacity-90 drop-shadow-lg"></i>
+                </div>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-medium text-[#d4af37] mb-3 elegant-font tracking-wide drop-shadow-sm">ИРИНА</h1>
+            <div class="flex items-center justify-center gap-4 text-yellow-100/50 text-xs tracking-[0.3em] uppercase mb-12">
+                <span class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></span>
+                <span>02.05.1966</span>
+                <span class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></span>
+            </div>
+            
+            <div class="glass-card p-10 mb-12 max-w-lg mx-auto text-center border-t-2 border-t-[#d4af37]/30">
+                <p class="text-lg leading-loose italic text-gray-200 font-light">
+                    "Где Земля встречает Воздух,<br>
+                    расцветает Сад Гармонии."
+                </p>
+                <div class="mt-8 flex justify-center gap-8 text-[10px] text-[#d4af37] uppercase tracking-widest font-bold">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-sun text-lg"></i>
+                        <span>Телец</span>
+                    </div>
+                    <div class="w-[1px] h-8 bg-[#d4af37]/20"></div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-moon text-lg"></i>
+                        <span>Весы</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startLevel()" class="gold-btn px-12 py-5 rounded-full text-lg w-full md:w-auto shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+                Войти в Сад Души
+            </button>
+        </div>
+
+        <!-- SCREEN 2: QUEST -->
+        <div id="screen-quest" class="hidden w-full max-w-xl">
+            <div class="glass-card p-8 md:p-12">
+                <div class="flex justify-between items-center mb-8 pb-4 border-b border-white/5">
+                    <span class="text-[#d4af37]/80 font-serif italic text-lg">Шаг <span id="q-num">1</span></span>
+                    <div class="flex gap-2" id="dots-container"></div>
+                </div>
+
+                <h3 id="q-text" class="text-2xl md:text-3xl font-medium mb-12 text-white leading-normal elegant-font min-h-[90px]"></h3>
+
+                <div id="q-options" class="grid gap-5"></div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: CHART (MENU) -->
+        <div id="screen-chart" class="hidden w-full max-w-5xl fade-in pb-10">
+            <h2 class="text-4xl text-center mb-12 elegant-font text-[#d4af37] drop-shadow-md">Звездный Узор</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
+                <!-- Planets -->
+                <div onclick="openModal('sun')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group">
+                    <i class="fas fa-seedling text-3xl text-[#d4af37] mb-3 group-hover:scale-110 transition-transform block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">СИЛА</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Солнце в Тельце</p>
+                </div>
+                
+                <div onclick="openModal('moon')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group">
+                    <i class="fas fa-balance-scale text-3xl text-[#d4af37] mb-3 group-hover:scale-110 transition-transform block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">ДУША</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Луна в Весах</p>
+                </div>
+
+                <div onclick="openModal('venus')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group">
+                    <i class="fas fa-heart text-3xl text-[#d4af37] mb-3 group-hover:scale-110 transition-transform block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">ЧУВСТВА</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Венера в Овне</p>
+                </div>
+
+                <div onclick="openModal('mars')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group">
+                    <i class="fas fa-gem text-3xl text-[#d4af37] mb-3 group-hover:scale-110 transition-transform block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">ЭНЕРГИЯ</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Марс в Тельце</p>
+                </div>
+
+                <div onclick="openModal('mercury')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group">
+                    <i class="fas fa-bolt text-3xl text-[#d4af37] mb-3 group-hover:scale-110 transition-transform block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">УМ</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Меркурий в Овне</p>
+                </div>
+
+                <div onclick="openModal('chart')" class="glass-card p-6 cursor-pointer hover:bg-white/5 active:scale-95 transition-all text-center group border-[#d4af37]/40 bg-[#d4af37]/5">
+                    <i class="fas fa-star text-3xl text-[#d4af37] mb-3 group-hover:rotate-180 transition-transform duration-700 block"></i>
+                    <h3 class="text-lg font-bold text-white elegant-font">КАРТА</h3>
+                    <p class="text-[#d4af37]/60 text-[10px] uppercase tracking-widest mt-1">Схема рождения</p>
+                </div>
+            </div>
+
+            <!-- COOKIE BUTTON -->
+            <div class="flex flex-col items-center justify-center mt-8">
+                <button id="cookie-btn" onclick="breakCookie()" class="group relative transition-transform active:scale-95 flex flex-col items-center">
+                    <div class="relative">
+                        <i class="fas fa-cookie-bite text-7xl text-[#c5a028] drop-shadow-2xl group-hover:rotate-6 transition-transform duration-300"></i>
+                        <i class="fas fa-sparkles text-xl text-yellow-200 absolute -top-2 -right-4 animate-pulse"></i>
+                    </div>
+                    <span class="mt-4 text-[#d4af37] font-serif italic text-sm border-b border-[#d4af37]/30 pb-1">Нажми, чтобы получить предсказание</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: MESSAGE -->
+        <div id="screen-message" class="hidden w-full max-w-2xl fade-in flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <div class="glass-card p-10 md:p-16 w-full relative overflow-hidden shadow-2xl">
+                <div class="absolute -top-20 -right-20 w-48 h-48 bg-[#d4af37] blur-[80px] opacity-10"></div>
+                
+                <i class="fas fa-dove text-6xl text-[#d4af37] mb-10 drop-shadow-lg"></i>
+                
+                <h2 class="text-4xl font-bold mb-10 text-white elegant-font tracking-wide">Дорогая Ирина!</h2>
+                
+                <div class="text-xl text-yellow-50 leading-loose italic mb-12 font-light">
+                    <p>"Ты — воплощение гармонии и красоты.</p>
+                    <p>Твоя мудрость — как глубокая река,</p>
+                    <p>Твое сердце — как цветущий сад.</p>
+                    <p>Пусть каждый твой день будет наполнен</p>
+                    <p>светом, любовью и покоем."</p>
+                </div>
+
+                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent mx-auto opacity-50"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- COOKIE MODAL (PREDICTION) -->
+    <div id="cookie-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md" onclick="closeCookie()">
+        <div class="glass-card p-10 max-w-lg w-full relative note-appear bg-[#fdfbf7] text-[#1a1a1a] shadow-2xl transform rotate-1" onclick="event.stopPropagation()">
+            <!-- Paper texture effect -->
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] pointer-events-none"></div>
+            
+            <button onclick="closeCookie()" class="absolute top-4 right-4 text-[#d4af37] hover:text-[#b08d2b] transition-colors"><i class="fas fa-times text-2xl"></i></button>
+            
+            <div class="text-center pt-4 pb-2">
+                <i class="fas fa-quote-left text-3xl text-[#d4af37]/40 mb-6 block"></i>
+                <p id="prediction-text" class="text-2xl md:text-3xl font-medium leading-relaxed handwritten-font text-[#1a472a] mb-8"></p>
+                <i class="fas fa-star text-sm text-[#d4af37] animate-spin-slow"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFO MODAL -->
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" onclick="closeModal()">
+        <div class="glass-card p-8 md:p-10 max-w-xl w-full relative transform transition-transform scale-100 max-h-[85vh] overflow-y-auto bg-[#0f281a]/95 border-[#d4af37]/30" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-[#d4af37] hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-white/5"><i class="fas fa-times"></i></button>
+            <h3 id="modal-title" class="text-3xl font-bold mb-6 text-[#d4af37] elegant-font border-b border-[#d4af37]/20 pb-4 pr-10"></h3>
+            <div id="modal-content" class="text-lg text-gray-200 leading-relaxed space-y-4 font-light"></div>
+            <div id="chart-visual" class="hidden w-64 h-64 mt-8 mx-auto"></div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div id="nav-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-[150%] transition-transform duration-700 w-[90%] max-w-md z-40">
+        <div class="bg-[#0c1f13]/90 border border-[#d4af37]/40 rounded-full p-2 px-6 flex justify-between items-center backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+            <button onclick="goToScreen('screen-chart')" class="flex flex-col items-center justify-center w-16 h-full text-[#d4af37]/60 hover:text-[#d4af37] transition-colors gap-1">
+                <i class="fas fa-star text-lg"></i>
+                <span class="text-[9px] uppercase font-bold tracking-widest">Карта</span>
+            </button>
+            
+            <button onclick="restartLevel()" class="w-12 h-12 bg-gradient-to-br from-[#d4af37] to-[#8a7018] rounded-full flex items-center justify-center text-[#0c1f13] shadow-lg hover:scale-105 active:scale-95 transition-transform -mt-6 border-4 border-[#0c1f13]">
+                <i class="fas fa-compass text-xl"></i>
+            </button>
+
+            <button onclick="goToScreen('screen-message')" class="flex flex-col items-center justify-center w-16 h-full text-[#d4af37]/60 hover:text-[#d4af37] transition-colors gap-1">
+                <i class="fas fa-envelope-open text-lg"></i>
+                <span class="text-[9px] uppercase font-bold tracking-widest">Письмо</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- PREDICTIONS ---
+        const predictions = [
+            "Сегодня день принесет неожиданную радость.",
+            "Ваша улыбка осветит чей-то путь.",
+            "Гармония начинается внутри вас.",
+            "Звезды шепчут: всё получится.",
+            "Позвольте себе маленькую роскошь сегодня.",
+            "Прекрасное уже рядом, просто оглянитесь.",
+            "Ваша мудрость поможет решить любую задачу.",
+            "Сегодня идеальный день для творчества.",
+            "Любовь окружает вас повсюду.",
+            "Удача на вашей стороне.",
+            "Слушайте свое сердце, оно знает верный путь.",
+            "Спокойствие — ваша суперсила сегодня.",
+            "Ждите приятных новостей к вечеру.",
+            "Ваш сад души цветет ярче всех.",
+            "Мир готовит для вас приятный сюрприз.",
+            "Сегодня вы особенно притягательны.",
+            "Отпустите тревоги, всё идет как надо.",
+            "Маленький шаг приведет к большой цели.",
+            "Вы — источник света для близких.",
+            "Счастье в простых моментах."
+        ];
+
+        // --- DATA ---
+        const questData = [
+            {
+                text: "Какое утро наполняет вас силой?",
+                options: [
+                    { text: "Тишина, аромат кофе и вид на природу", type: "earth" },
+                    { text: "Бодрое начало и список новых планов", type: "fire" }
+                ]
+            },
+            {
+                text: "В сложной ситуации вы чаще...",
+                options: [
+                    { text: "Ищете компромисс и сохраняете мир", type: "air" },
+                    { text: "Твердо и спокойно стоите на своем", type: "earth" }
+                ]
+            },
+            {
+                text: "Что для вас настоящий отдых?",
+                options: [
+                    { text: "Красота, искусство, уютный вечер", type: "venus" },
+                    { text: "Видимый результат проделанной работы", type: "mars" }
+                ]
+            },
+            {
+                text: "Какую дверь вы откроете сегодня?",
+                options: [
+                    { text: "Дверь Звездной Мудрости", end: "chart" },
+                    { text: "Дверь Сердечного Тепла", end: "msg" }
+                ]
+            }
+        ];
+
+        const astroData = {
+            sun: {
+                title: "СОЛНЦЕ В ТЕЛЬЦЕ ♉",
+                text: `<p>Ирина, ваше Солнце в <strong>Тельце</strong>. Это знак самой Жизни, плодородия и красоты. Вы — женщина-опора.</p>
+                       <p>Вы умеете создавать вокруг себя пространство, в котором хочется жить. Вы цените качество, вкус и комфорт. Ваша сила — в спокойствии и умении наслаждаться моментом "здесь и сейчас".</p>`
+            },
+            moon: {
+                title: "ЛУНА В ВЕСАХ ♎",
+                text: `<p>Ваша душа (Луна) стремится к идеальному равновесию. Вы физически не переносите конфликты и грубость.</p>
+                       <p>У вас врожденный талант дипломата и безупречный эстетический вкус. Вы интуитивно чувствуете, как сделать красиво и правильно. Вы — истинная Леди.</p>`
+            },
+            mars: {
+                title: "МАРС В ТЕЛЬЦЕ ♉",
+                text: `<p>Ваша энергия течет плавно, как большая река. Вы не любите суеты и спешки. Вы долго "запрягаете", но если начали дело — вас невозможно остановить. Вы невероятно выносливы и трудолюбивы.</p>`
+            },
+            venus: {
+                title: "ВЕНЕРА В ОВНЕ ♈",
+                text: `<p>В любви вы гораздо более пылкая, чем кажетесь внешне. Венера в Овне дает вам искру, страсть и желание быть первой. Ваши чувства яркие, вы умеете вдохновлять и зажигать огонь в других.</p>`
+            },
+            mercury: {
+                title: "МЕРКУРИЙ В ОВНЕ ♈",
+                text: `<p>Ваш ум работает быстро и решительно. Несмотря на внешнюю мягкость, в мыслях вы очень прямолинейны и честны. Вы быстро схватываете суть и принимаете верные решения.</p>`
+            },
+            chart: {
+                title: "КАРТА 02.05.1966",
+                text: `<p>Детальная расшифровка положений:</p>
+                       <ul class="space-y-3 mt-4 text-base">
+                           <li class="flex items-center gap-3"><span class="text-[#d4af37] text-xl w-6 text-center">☉</span> <strong>Солнце в Тельце ♉</strong> — Жизненная сила, упорство.</li>
+                           <li class="flex items-center gap-3"><span class="text-[#d4af37] text-xl w-6 text-center">☽</span> <strong>Луна в Весах ♎</strong> — Душа, гармония, партнерство.</li>
+                           <li class="flex items-center gap-3"><span class="text-[#d4af37] text-xl w-6 text-center">☿</span> <strong>Меркурий в Овне ♈</strong> — Ум, быстрая речь, идеи.</li>
+                           <li class="flex items-center gap-3"><span class="text-[#d4af37] text-xl w-6 text-center">♀</span> <strong>Венера в Овне ♈</strong> — Чувства, импульс, страсть.</li>
+                           <li class="flex items-center gap-3"><span class="text-[#d4af37] text-xl w-6 text-center">♂</span> <strong>Марс в Тельце ♉</strong> — Действие, выносливость, ресурс.</li>
+                       </ul>`,
+                isChart: true
+            }
+        };
+
+        let currentQ = 0;
+
+        function startLevel() {
+            switchScreen('screen-intro', 'screen-quest');
+            document.getElementById('nav-bar').classList.remove('translate-y-[150%]');
+            loadQ();
+        }
+
+        function loadQ() {
+            const data = questData[currentQ];
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('q-text').innerText = data.text;
+            
+            // Dots
+            const dots = document.getElementById('dots-container');
+            dots.innerHTML = '';
+            questData.forEach((_, i) => {
+                const d = document.createElement('div');
+                d.className = `w-2 h-2 rounded-full transition-colors duration-300 ${i <= currentQ ? 'bg-[#d4af37]' : 'bg-[#d4af37]/20'}`;
+                dots.appendChild(d);
+            });
+
+            const div = document.getElementById('q-options');
+            div.innerHTML = '';
+            
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full py-6 px-6 rounded-xl text-left text-lg text-yellow-50 elegant-font hover:text-white transition-all hover:pl-8 active:scale-[0.98]`;
+                btn.innerHTML = opt.text;
+                
+                btn.onclick = () => {
+                    if (opt.end) {
+                        if(opt.end === 'msg') goToScreen('screen-message');
+                        else goToScreen('screen-chart');
+                    } else {
+                        currentQ++;
+                        loadQ();
+                    }
+                };
+                div.appendChild(btn);
+            });
+        }
+
+        function switchScreen(from, to) {
+            document.getElementById(from).classList.add('hidden');
+            const target = document.getElementById(to);
+            target.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function goToScreen(id) {
+            ['screen-intro', 'screen-quest', 'screen-chart', 'screen-message'].forEach(s => 
+                document.getElementById(s).classList.add('hidden')
+            );
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function restartLevel() {
+            currentQ = 0;
+            goToScreen('screen-quest');
+            loadQ();
+        }
+
+        function openModal(key) {
+            const d = astroData[key];
+            const m = document.getElementById('modal');
+            document.getElementById('modal-title').innerText = d.title;
+            document.getElementById('modal-content').innerHTML = d.text;
+            
+            const chartViz = document.getElementById('chart-visual');
+            if(d.isChart) {
+                chartViz.classList.remove('hidden');
+                renderSVG();
+            } else {
+                chartViz.classList.add('hidden');
+            }
+            
+            m.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // --- COOKIE LOGIC ---
+        function breakCookie() {
+            const btn = document.getElementById('cookie-btn');
+            btn.classList.add('cracking');
+            
+            setTimeout(() => {
+                const randomText = predictions[Math.floor(Math.random() * predictions.length)];
+                document.getElementById('prediction-text').innerText = randomText;
+                document.getElementById('cookie-modal').classList.remove('hidden');
+                
+                // Reset button visual after modal opens
+                setTimeout(() => {
+                    btn.classList.remove('cracking');
+                }, 1000);
+            }, 500);
+        }
+
+        function closeCookie() {
+            document.getElementById('cookie-modal').classList.add('hidden');
+        }
+
+
+        // Falling Petals Animation
+        const canvas = document.getElementById('petals-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        const petals = [];
+
+        function createPetal() {
+            return {
+                x: Math.random() * width,
+                y: Math.random() * -100,
+                size: Math.random() * 5 + 2,
+                speed: Math.random() * 1 + 0.5,
+                angle: Math.random() * 360,
+                spin: (Math.random() - 0.5) * 0.02,
+                color: Math.random() > 0.5 ? 'rgba(212, 175, 55, 0.3)' : 'rgba(255, 255, 255, 0.15)'
+            };
+        }
+
+        for(let i=0; i<50; i++) petals.push(createPetal());
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, width, height);
+            petals.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.ellipse(p.x, p.y, p.size, p.size/2, p.angle, 0, Math.PI * 2);
+                ctx.fill();
+                
+                p.y += p.speed;
+                p.x += Math.sin(p.y * 0.01) * 0.5;
+                p.angle += p.spin;
+
+                if (p.y > height) {
+                    Object.assign(p, createPetal());
+                }
+            });
+            requestAnimationFrame(animatePetals);
+        }
+        animatePetals();
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // SVG Chart (Approx 02.05.1966) with Zodiac Symbols
+        function renderSVG() {
+            const div = document.getElementById('chart-visual');
+            const svg = `
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-[spin_80s_linear_infinite]">
+                <circle cx="100" cy="100" r="98" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.3"/>
+                <circle cx="100" cy="100" r="85" stroke="#d4af37" stroke-width="1" fill="none" opacity="0.1"/>
+                
+                <!-- Zodiac Separators -->
+                ${[...Array(12)].map((_,i)=>`<line x1="100" y1="100" x2="${100+95*Math.cos(i*Math.PI/6)}" y2="${100+95*Math.sin(i*Math.PI/6)}" stroke="white" opacity="0.1"/>`).join('')}
+
+                <!-- Zodiac Symbols (Approx positions relative to Aries at 0 deg) -->
+                <!-- Just simplified markers for visual harmony -->
+                <text x="100" y="10" fill="#d4af37" font-size="6" text-anchor="middle" opacity="0.5">♈</text>
+                <text x="190" y="100" fill="#d4af37" font-size="6" text-anchor="middle" opacity="0.5">♋</text>
+                <text x="100" y="190" fill="#d4af37" font-size="6" text-anchor="middle" opacity="0.5">♎</text>
+                <text x="10" y="100" fill="#d4af37" font-size="6" text-anchor="middle" opacity="0.5">♑</text>
+                
+                <!-- Sun Taurus (Approx 40 deg) -->
+                <g transform="rotate(40 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="15" stroke="#d4af37" stroke-width="1.5"/>
+                   <circle cx="100" cy="15" r="5" fill="#d4af37"/>
+                   <text x="100" y="25" fill="#d4af37" font-size="6" text-anchor="middle" transform="rotate(-40 100 25)">☉</text>
+                </g>
+                <!-- Moon Libra (Approx 185 deg) -->
+                <g transform="rotate(185 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="25" stroke="#a0aec0" stroke-width="1"/>
+                   <circle cx="100" cy="25" r="4" fill="#a0aec0"/>
+                   <text x="100" y="35" fill="#a0aec0" font-size="6" text-anchor="middle" transform="rotate(-185 100 35)">☽</text>
+                </g>
+                 <!-- Venus Aries (Approx 10 deg) -->
+                <g transform="rotate(10 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="35" stroke="#f87171" stroke-width="1"/>
+                   <circle cx="100" cy="35" r="3" fill="#f87171"/>
+                   <text x="100" y="45" fill="#f87171" font-size="6" text-anchor="middle" transform="rotate(-10 100 45)">♀</text>
+                </g>
+                 <!-- Mars Taurus (Approx 50 deg) -->
+                <g transform="rotate(50 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="45" stroke="#fbbf24" stroke-width="1"/>
+                   <circle cx="100" cy="45" r="3" fill="#fbbf24"/>
+                   <text x="100" y="55" fill="#fbbf24" font-size="6" text-anchor="middle" transform="rotate(-50 100 55)">♂</text>
+                </g>
+
+                <circle cx="100" cy="100" r="4" fill="#1a472a"/>
+            </svg>`;
+            div.innerHTML = svg;
+        }
+    </script>
+</body>
+</html>
