@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VICTOR'S NAVIGATOR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+
+        :root {
+            --bronze: #cd7f32;
+            --bronze-light: #e3a869;
+            --deep-space: #0b1026;
+            --panel-bg: rgba(16, 24, 48, 0.85);
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--deep-space);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #1a2c5e 0%, #0b1026 70%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .header-font { font-family: 'Cinzel', serif; }
+        .text-font { font-family: 'Montserrat', sans-serif; }
+
+        /* Stars Background */
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .cyber-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(205, 127, 50, 0.3); /* Bronze border */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        /* Tech Corners */
+        .cyber-card::before, .cyber-card::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: var(--bronze);
+            border-style: solid;
+            transition: all 0.3s;
+        }
+        .cyber-card::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .cyber-card::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+        .bronze-btn {
+            background: linear-gradient(135deg, #cd7f32 0%, #a05a18 100%);
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.4);
+            border: 1px solid #ffcc80;
+        }
+        .bronze-btn:active { transform: scale(0.96); }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(205, 127, 50, 0.2);
+            transition: all 0.3s;
+        }
+        .option-btn:active { background: rgba(205, 127, 50, 0.15); }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scan-effect {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(205, 127, 50, 0.1), transparent);
+            animation: scanline 3s linear infinite;
+            pointer-events: none;
+        }
+
+        /* 2026 Hologram Effect */
+        .hologram-text {
+            color: var(--bronze-light);
+            text-shadow: 0 0 5px rgba(205, 127, 50, 0.8), 0 0 10px rgba(205, 127, 50, 0.4);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0b1026; }
+        ::-webkit-scrollbar-thumb { background: var(--bronze); }
+    </style>
+</head>
+<body class="flex flex-col pb-32">
+
+    <canvas id="star-canvas"></canvas>
+
+    <div id="app" class="relative z-10 flex-grow flex items-center justify-center p-6">
+        
+        <!-- SCREEN 1: INTRO -->
+        <div id="screen-intro" class="text-center w-full max-w-2xl fade-in">
+            <div class="mb-10 relative inline-block group">
+                <div class="w-32 h-32 border-2 border-bronze/50 flex items-center justify-center mx-auto bg-black/40 relative rounded-full shadow-[0_0_30px_rgba(205,127,50,0.2)]">
+                    <div class="absolute inset-0 border border-bronze/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                    <i class="fas fa-compass text-5xl text-[#cd7f32] opacity-90"></i>
+                </div>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-3 header-font tracking-widest">VICTOR</h1>
+            <div class="flex items-center justify-center gap-4 text-bronze/70 text-sm tracking-[0.2em] uppercase mb-12">
+                <span class="w-12 h-[1px] bg-bronze/30"></span>
+                <span>01.12.2000</span>
+                <span class="w-12 h-[1px] bg-bronze/30"></span>
+            </div>
+            
+            <div class="cyber-card p-8 mb-12 max-w-md mx-auto text-center border-t-2 border-t-bronze/50">
+                <div class="scan-effect"></div>
+                <p class="text-lg leading-relaxed text-gray-300 font-light text-font">
+                    "Огонь Стрельца задает цель,<br>
+                    Воздух Водолея прокладывает путь."
+                </p>
+                <div class="mt-6 flex justify-center gap-8 text-xs text-bronze uppercase tracking-widest font-bold">
+                    <span class="flex items-center gap-2"><i class="fas fa-fire"></i> Стрелец</span>
+                    <span class="flex items-center gap-2"><i class="fas fa-wind"></i> Водолей</span>
+                </div>
+            </div>
+
+            <button onclick="startLevel()" class="bronze-btn px-10 py-5 rounded-sm text-lg w-full md:w-auto">
+                <i class="fas fa-power-off mr-2 text-xs"></i> Запуск Системы
+            </button>
+        </div>
+
+        <!-- SCREEN 2: CHART MENU -->
+        <div id="screen-chart" class="hidden w-full max-w-6xl fade-in pb-10">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl header-font text-white mb-2">Навигатор Судьбы</h2>
+                <div class="w-24 h-1 bg-bronze mx-auto opacity-50"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <!-- Planets -->
+                <div onclick="openModal('sun')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-sun text-2xl text-[#cd7f32] group-hover:animate-spin-slow"></i>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Ядро</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white header-font mb-1 text-left">ЛИЧНОСТЬ</h3>
+                    <p class="text-bronze/80 text-xs uppercase tracking-widest text-left">Стрелец ♐</p>
+                </div>
+                
+                <div onclick="openModal('moon')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-moon text-2xl text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Душа</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white header-font mb-1 text-left">ИНТУИЦИЯ</h3>
+                    <p class="text-cyan-400/80 text-xs uppercase tracking-widest text-left">Водолей ♒</p>
+                </div>
+
+                <div onclick="openModal('mercury')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-brain text-2xl text-purple-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Разум</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white header-font mb-1 text-left">ИНТЕЛЛЕКТ</h3>
+                    <p class="text-purple-400/80 text-xs uppercase tracking-widest text-left">Скорпион ♏</p>
+                </div>
+
+                <div onclick="openModal('mars')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-bolt text-2xl text-red-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Драйв</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white header-font mb-1 text-left">ДЕЙСТВИЕ</h3>
+                    <p class="text-red-400/80 text-xs uppercase tracking-widest text-left">Весы ♎</p>
+                </div>
+
+                <div onclick="openModal('venus')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fas fa-gem text-2xl text-green-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Ценности</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white header-font mb-1 text-left">ОТНОШЕНИЯ</h3>
+                    <p class="text-green-400/80 text-xs uppercase tracking-widest text-left">Козерог ♑</p>
+                </div>
+
+                <div onclick="openModal('chart')" class="cyber-card p-6 cursor-pointer hover:bg-white/5 transition-all text-center group flex flex-col justify-center border-bronze/50 bg-bronze/5">
+                    <i class="fas fa-globe-europe text-4xl text-[#cd7f32] mb-2 group-hover:rotate-180 transition-transform duration-700 opacity-80"></i>
+                    <h3 class="text-lg font-bold text-white header-font">СХЕМА</h3>
+                </div>
+            </div>
+
+            <!-- 2026 BUTTON -->
+            <div class="flex justify-center">
+                <button onclick="open2026()" class="group relative w-full max-w-md">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-bronze to-yellow-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                    <div class="relative bg-black border border-bronze/50 p-6 rounded-lg flex items-center justify-between hover:bg-[#1a1500] transition-colors">
+                        <div class="text-left">
+                            <h3 class="text-2xl font-bold text-white header-font tracking-widest">2026</h3>
+                            <p class="text-bronze text-xs uppercase">Протокол Будущего</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-bronze text-xl group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2026 PREDICTION -->
+        <div id="screen-2026" class="hidden w-full max-w-3xl fade-in pb-20">
+            <div class="cyber-card p-8 md:p-12 relative overflow-hidden border-t-4 border-t-bronze">
+                <div class="scan-effect"></div>
+                
+                <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
+                    <div class="w-12 h-12 bg-bronze/10 rounded flex items-center justify-center text-bronze text-2xl border border-bronze/30">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl header-font text-white">ПРОГНОЗ 2026</h2>
+                        <p class="text-xs text-gray-400 uppercase tracking-widest">Анализ планетарных транзитов</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 text-lg text-gray-300 font-light text-font leading-relaxed">
+                    <p class="first-letter:text-4xl first-letter:text-bronze first-letter:mr-1 first-letter:float-left">
+                        2026 год станет для Виктора годом <strong>Великого Перехода</strong>. Планеты высшего порядка (Уран и Плутон) меняют знаки, создавая мощные вихри перемен именно для вашей стихии (Огонь и Воздух).
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="bg-black/30 p-4 rounded border-l-2 border-cyan-400">
+                            <h4 class="text-cyan-400 font-bold mb-2 uppercase text-sm"><i class="fas fa-rocket mr-2"></i>Прорыв</h4>
+                            <p class="text-sm">Уран делает аспект к вашему Солнцу. Время сбросить старую кожу. Ждите резких возможностей в карьере, связанных с технологиями или свободой.</p>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded border-l-2 border-purple-400">
+                            <h4 class="text-purple-400 font-bold mb-2 uppercase text-sm"><i class="fas fa-bolt mr-2"></i>Трансформация</h4>
+                            <p class="text-sm">Плутон влияет на вашу Луну. Интуиция обострится до предела. Вы научитесь управлять своей внутренней силой как никогда раньше.</p>
+                        </div>
+                    </div>
+
+                    <p class="mt-4 border-t border-white/5 pt-4">
+                        <span class="text-bronze font-bold">Главный совет:</span> Не бойтесь шторма. Вы — капитан, который умеет ходить под парусом в любую погоду. Инвестируйте в себя и новые знания.
+                    </p>
+                </div>
+
+                <div class="mt-10 text-center">
+                    <button onclick="goToScreen('screen-chart')" class="text-gray-500 hover:text-white transition-colors text-sm uppercase tracking-widest">
+                        <i class="fas fa-arrow-up mr-1"></i> Свернуть прогноз
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onclick="closeModal()">
+        <div class="cyber-card p-8 md:p-10 max-w-xl w-full relative transform transition-transform scale-100 max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-bronze hover:text-white transition-colors text-2xl"><i class="fas fa-times"></i></button>
+            <h3 id="modal-title" class="text-2xl font-bold mb-6 text-bronze header-font border-b border-white/10 pb-4 pr-10"></h3>
+            <div id="modal-content" class="text-lg text-gray-300 leading-relaxed space-y-4 text-font font-light"></div>
+            <div id="chart-visual" class="hidden w-64 h-64 mt-8 mx-auto"></div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div id="nav-bar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-[150%] transition-transform duration-700 w-[95%] max-w-md z-40">
+        <div class="bg-[#0b1026]/95 border border-bronze/30 rounded-md p-2 px-6 flex justify-between items-center backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+            
+            <button onclick="goToScreen('screen-intro')" class="flex flex-col items-center justify-center w-16 h-full text-gray-500 hover:text-bronze transition-colors gap-1 group">
+                <i class="fas fa-home text-lg group-hover:-translate-y-1 transition-transform"></i>
+                <span class="text-[9px] uppercase font-bold tracking-widest">Главная</span>
+            </button>
+
+            <div class="w-[1px] h-6 bg-white/10"></div>
+
+            <button onclick="goToScreen('screen-chart')" class="flex flex-col items-center justify-center w-16 h-full text-gray-500 hover:text-bronze transition-colors gap-1 group">
+                <i class="fas fa-star text-lg group-hover:-translate-y-1 transition-transform"></i>
+                <span class="text-[9px] uppercase font-bold tracking-widest">Карта</span>
+            </button>
+            
+            <div class="w-[1px] h-6 bg-white/10"></div>
+
+            <button onclick="open2026()" class="flex flex-col items-center justify-center w-16 h-full text-gray-500 hover:text-bronze transition-colors gap-1 group">
+                <i class="fas fa-hourglass text-lg group-hover:-translate-y-1 transition-transform"></i>
+                <span class="text-[9px] uppercase font-bold tracking-widest">2026</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const astroData = {
+            sun: {
+                title: "СОЛНЦЕ В СТРЕЛЬЦЕ ♐",
+                text: `<p>Виктор, твое Солнце в <strong>Стрельце</strong>. Это энергия Огня и расширения.</p>
+                       <p>Ты — стратег и философ. Тебе тесно в рамках обыденности. Твой взгляд всегда устремлен за горизонт. Ты оптимист, который верит, что нет ничего невозможного. Тебе важно иметь большую Цель или Миссию.</p>`
+            },
+            moon: {
+                title: "ЛУНА В ВОДОЛЕЕ ♒",
+                text: `<p>Твоя душа (Луна) находится в знаке <strong>Водолея</strong>. Это дает тебе мощный интеллект и потребность в свободе.</p>
+                       <p>Внутри ты — независимый бунтарь и новатор. Ты не любишь драму и излишние эмоции, предпочитая логику и дружбу. Тебе нужно личное пространство, чтобы перезаряжаться.</p>`
+            },
+            mercury: {
+                title: "МЕРКУРИЙ В СКОРПИОНЕ ♏",
+                text: `<p>Твой ум (Меркурий) работает как сканер. В Скорпионе он дает проницательность и "рентгеновское зрение".</p>
+                       <p>Ты видишь людей насквозь и чувствуешь ложь за версту. Ты любишь докапываться до сути вещей. В общении можешь быть немногословным, но твои слова всегда имеют вес.</p>`
+            },
+            venus: {
+                title: "ВЕНЕРА В КОЗЕРОГЕ ♑",
+                text: `<p>В любви и ценностях ты серьезен. Венера в Козероге ищет надежность, статус и долгосрочные перспективы.</p>
+                       <p>Ты не размениваешься по мелочам. Тебе нужна партнерша, которую ты сможешь уважать и с которой можно построить "империю". Ты сдержан в проявлении чувств, но твоя преданность непоколебима.</p>`
+            },
+            mars: {
+                title: "МАРС В ВЕСАХ ♎",
+                text: `<p>В действиях ты ищешь баланс. Марс в Весах делает тебя отличным переговорщиком и стратегом.</p>
+                       <p>Ты предпочитаешь решать конфликты дипломатией, а не грубой силой. Но если чаша весов перевесит, твой удар будет точным и справедливым.</p>`
+            },
+            chart: {
+                title: "КАРТА 01.12.2000",
+                text: `<p>Анализ положений:</p>
+                       <ul class="space-y-3 mt-4 text-base">
+                           <li class="flex items-center gap-3"><span class="text-[#cd7f32] w-6">☉</span> <strong>Стрелец ♐</strong> — Видение, цель.</li>
+                           <li class="flex items-center gap-3"><span class="text-cyan-400 w-6">☽</span> <strong>Водолей ♒</strong> — Свобода, интеллект.</li>
+                           <li class="flex items-center gap-3"><span class="text-purple-400 w-6">☿</span> <strong>Скорпион ♏</strong> — Глубина ума.</li>
+                           <li class="flex items-center gap-3"><span class="text-green-400 w-6">♀</span> <strong>Козерог ♑</strong> — Надежность.</li>
+                           <li class="flex items-center gap-3"><span class="text-red-400 w-6">♂</span> <strong>Весы ♎</strong> — Дипломатия.</li>
+                       </ul>`,
+                isChart: true
+            }
+        };
+
+        function startLevel() {
+            switchScreen('screen-intro', 'screen-chart');
+            document.getElementById('nav-bar').classList.remove('translate-y-[150%]');
+        }
+
+        function switchScreen(from, to) {
+            document.getElementById(from).classList.add('hidden');
+            const target = document.getElementById(to);
+            target.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function goToScreen(id) {
+            ['screen-intro', 'screen-chart', 'screen-2026'].forEach(s => 
+                document.getElementById(s).classList.add('hidden')
+            );
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function open2026() {
+            goToScreen('screen-2026');
+        }
+
+        function openModal(key) {
+            const d = astroData[key];
+            const m = document.getElementById('modal');
+            document.getElementById('modal-title').innerText = d.title;
+            document.getElementById('modal-content').innerHTML = d.text;
+            
+            const chartViz = document.getElementById('chart-visual');
+            if(d.isChart) {
+                chartViz.classList.remove('hidden');
+                renderSVG();
+            } else {
+                chartViz.classList.add('hidden');
+            }
+            
+            m.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // Falling Stars Animation
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        const stars = [];
+
+        function createStar() {
+            return {
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 1.5,
+                opacity: Math.random(),
+                speed: Math.random() * 0.05
+            };
+        }
+
+        for(let i=0; i<100; i++) stars.push(createStar());
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(s => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+                s.opacity += (Math.random() - 0.5) * 0.02;
+                if(s.opacity < 0) s.opacity = 0;
+                if(s.opacity > 1) s.opacity = 1;
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // SVG Chart (Approx 01.12.2000)
+        function renderSVG() {
+            const div = document.getElementById('chart-visual');
+            // Degrees (Aries = 0)
+            // Sun Sag ~9 deg -> 249
+            // Moon Aqua ~15 deg -> 315
+            // Mercury Scorpio ~23 deg -> 233
+            // Venus Cap ~26 deg -> 296
+            // Mars Libra ~18 deg -> 198
+            const svg = `
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-[spin_120s_linear_infinite]">
+                <circle cx="100" cy="100" r="98" stroke="#cd7f32" stroke-width="0.5" fill="none" opacity="0.3"/>
+                <circle cx="100" cy="100" r="80" stroke="#cd7f32" stroke-width="1" fill="none" opacity="0.1"/>
+                
+                ${[...Array(12)].map((_,i)=>`<line x1="100" y1="100" x2="${100+95*Math.cos(i*Math.PI/6)}" y2="${100+95*Math.sin(i*Math.PI/6)}" stroke="white" opacity="0.1"/>`).join('')}
+
+                <!-- Sun Sag -->
+                <g transform="rotate(249 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="15" stroke="#cd7f32" stroke-width="2"/>
+                   <circle cx="100" cy="15" r="5" fill="#cd7f32"/>
+                </g>
+                <!-- Moon Aqua -->
+                <g transform="rotate(315 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="25" stroke="#22d3ee" stroke-width="1"/>
+                   <circle cx="100" cy="25" r="4" fill="#22d3ee"/>
+                </g>
+                 <!-- Mercury Scorpio -->
+                <g transform="rotate(233 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="35" stroke="#c084fc" stroke-width="1"/>
+                   <circle cx="100" cy="35" r="3" fill="#c084fc"/>
+                </g>
+                 <!-- Venus Cap -->
+                <g transform="rotate(296 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="45" stroke="#4ade80" stroke-width="1"/>
+                   <circle cx="100" cy="45" r="3" fill="#4ade80"/>
+                </g>
+                 <!-- Mars Libra -->
+                <g transform="rotate(198 100 100)">
+                   <line x1="100" y1="100" x2="100" y2="55" stroke="#f87171" stroke-width="1"/>
+                   <circle cx="100" cy="55" r="3" fill="#f87171"/>
+                </g>
+
+                <circle cx="100" cy="100" r="4" fill="#0b1026" stroke="#cd7f32" stroke-width="1"/>
+            </svg>`;
+            div.innerHTML = svg;
+        }
+    </script>
+</body>
+</html>
