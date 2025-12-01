@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звездная Карта Натальи</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Montserrat:wght@200;400;600&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050510;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif-font {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Анимация звезд на фоне */
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.5);
+            border-color: rgba(147, 51, 234, 0.5);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Стилизованный скроллбар */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4c1d95; 
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <!-- Фоновая анимация -->
+    <canvas id="star-canvas"></canvas>
+
+    <!-- Основной контейнер -->
+    <div id="app" class="relative z-10 flex-grow flex items-center justify-center p-4">
+        
+        <!-- Сцена 1: Приветствие -->
+        <div id="welcome-screen" class="text-center max-w-2xl w-full fade-in">
+            <div class="mb-6 relative inline-block">
+                <div class="absolute inset-0 bg-indigo-600 blur-2xl opacity-30 rounded-full"></div>
+                <!-- Заменили внешнюю картинку на надежный SVG -->
+                <svg class="relative w-24 h-24 mx-auto animate-pulse text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-200 mb-4 serif-font">
+                Космос Натальи
+            </h1>
+            <h2 class="text-2xl md:text-3xl text-indigo-200 mb-8 serif-font italic">
+                Рожденная 22.05.1996
+            </h2>
+            <p class="text-gray-300 mb-10 text-lg leading-relaxed max-w-lg mx-auto">
+                В этот день Солнце уже уверенно сияло в знаке Близнецов, а Луна царствовала в Раке. <br>
+                Ты — союз Воздуха и Воды, Интеллекта и Интуиции.
+                <br>Открой тайну своей натальной карты.
+            </p>
+            <button onclick="goToMenu()" class="group relative px-8 py-4 bg-transparent overflow-hidden rounded-full text-purple-100 shadow-2xl transition-all duration-300 hover:text-white border border-indigo-500/50">
+                <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-900 via-indigo-800 to-purple-900 opacity-80 group-hover:opacity-100 transition-opacity"></span>
+                <span class="relative flex items-center gap-3 text-lg font-semibold tracking-wider">
+                    Узнать Судьбу <i class="fas fa-star"></i>
+                </span>
+            </button>
+        </div>
+
+        <!-- Сцена 2: Меню Выбора -->
+        <div id="menu-screen" class="hidden w-full max-w-5xl fade-in">
+            <h2 class="text-4xl text-center mb-10 serif-font text-indigo-100">Звездные Аспекты</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Карточка 1: Личность -->
+                <div onclick="showPrediction('sun')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-yellow-500/20 rounded-full flex items-center justify-center mb-4 text-yellow-300 text-2xl">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Я и Эго</h3>
+                    <p class="text-sm text-gray-400">Солнце в Близнецах. Твоя сознательная сила.</p>
+                </div>
+
+                <!-- Карточка 2: Эмоции -->
+                <div onclick="showPrediction('moon')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-gray-200/20 rounded-full flex items-center justify-center mb-4 text-gray-100 text-2xl">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Душа</h3>
+                    <p class="text-sm text-gray-400">Луна в Раке. Чувства и подсознание.</p>
+                </div>
+
+                <!-- Карточка 3: Любовь -->
+                <div onclick="showPrediction('venus')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-pink-500/20 rounded-full flex items-center justify-center mb-4 text-pink-300 text-2xl">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Отношения</h3>
+                    <p class="text-sm text-gray-400">Венера в Близнецах. Стиль любви.</p>
+                </div>
+
+                <!-- Карточка 4: Энергия -->
+                <div onclick="showPrediction('mars')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-red-600/20 rounded-full flex items-center justify-center mb-4 text-red-400 text-2xl">
+                        <i class="fas fa-fire-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Действие</h3>
+                    <p class="text-sm text-gray-400">Марс в Тельце. Твоя пробивная мощь.</p>
+                </div>
+
+                <!-- Карточка 5: Интеллект -->
+                <div onclick="showPrediction('mercury')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center">
+                    <div class="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center mb-4 text-green-300 text-2xl">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Мышление</h3>
+                    <p class="text-sm text-gray-400">Меркурий в Тельце. Логика и речь.</p>
+                </div>
+                 <!-- Карточка 6: Карта -->
+                 <div onclick="showPrediction('chart')" class="glass-panel p-6 rounded-2xl cursor-pointer card-hover flex flex-col items-center text-center border-indigo-500/30 bg-blue-900/40">
+                    <div class="w-14 h-14 bg-purple-500/20 rounded-full flex items-center justify-center mb-4 text-purple-300 text-2xl">
+                        <i class="fas fa-globe-europe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Карта Неба</h3>
+                    <p class="text-sm text-gray-400">Снимок планет на 22 мая 1996.</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <button onclick="goBack('welcome')" class="text-gray-500 hover:text-white transition-colors">
+                    &larr; Вернуться к началу
+                </button>
+            </div>
+        </div>
+
+        <!-- Сцена 3: Результат -->
+        <div id="result-screen" class="hidden w-full max-w-4xl fade-in flex flex-col md:flex-row gap-8 items-start">
+            
+            <!-- Левая колонка: Визуал знака -->
+            <div class="w-full md:w-1/3 glass-panel p-6 rounded-2xl flex flex-col items-center justify-center min-h-[300px]">
+                <div id="planet-icon" class="text-8xl mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"></div>
+                <h3 id="planet-title" class="text-2xl font-bold text-center serif-font text-indigo-200"></h3>
+                <div id="chart-visual" class="hidden w-full h-64 mt-4 relative"></div>
+            </div>
+
+            <!-- Правая колонка: Текст -->
+            <div class="w-full md:w-2/3">
+                <div class="glass-panel p-8 rounded-2xl h-full border-t-4 border-indigo-500">
+                    <h3 id="result-header" class="text-3xl font-bold mb-6 serif-font bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-300"></h3>
+                    <div id="result-text" class="text-lg leading-relaxed text-gray-200 space-y-4 font-light"></div>
+                    
+                    <button onclick="goBack('menu')" class="mt-8 px-6 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/20">
+                        &larr; Выбрать другую сферу
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA (UPDATED FOR MAY 22, 1996) ---
+        const natalData = {
+            sun: {
+                title: "Солнце в Близнецах",
+                icon: "♊",
+                color: "text-yellow-400",
+                header: "Королева Коммуникации",
+                text: `<p>Наташа, 22 мая Солнце уже уверенно вошло в знак <strong>Близнецов</strong>. Ты — человек Воздуха: легкая, подвижная, любознательная.</p>
+                       <p>Твоя главная сила — <strong>интеллект и слово</strong>. Ты умеешь делать несколько дел одновременно, быстро переключаешься и ненавидишь скуку. Твоя личность многогранна, ты умеешь адаптироваться к любой компании.</p>`
+            },
+            moon: {
+                title: "Луна в Раке",
+                icon: "♋",
+                color: "text-gray-200",
+                header: "Глубокая Душевность",
+                text: `<p>В отличие от твоего общительного Солнца, твоя Луна находится в чувствительном <strong>Раке</strong>. Это делает тебя невероятно интуитивной.</p>
+                       <p>Дома ты сбрасываешь маску веселой болтушки и становишься мягкой, ранимой и заботливой. Тебе жизненно важно иметь безопасное место ("норку"), где можно укрыться от мира. У тебя отличная память на эмоции.</p>`
+            },
+            mercury: {
+                title: "Меркурий в Тельце",
+                icon: "♉",
+                color: "text-green-300",
+                header: "Основательный Ум",
+                text: `<p>Хоть ты и Близнецы, мыслишь ты как практик. Меркурий в земном Тельце заземляет твои идеи.</p>
+                       <p>Ты не бросаешь слов на ветер. Если ты что-то решила изучить, то досконально. Тебя интересуют знания, которые можно применить на практике и которые приносят комфорт или доход.</p>`
+            },
+            venus: {
+                title: "Венера в Близнецах",
+                icon: "♀",
+                color: "text-pink-300",
+                header: "Любовь как Интерес",
+                text: `<p>В отношениях тебе нужен друг и собеседник. Страсть для тебя начинается с интересного разговора.</p>
+                       <p>Ты любишь флирт, разнообразие и легкость. Ревность и драмы тебя отпугивают. Твой идеальный партнер — тот, кто не даст тебе заскучать и будет разделять твои многочисленные хобби.</p>`
+            },
+            mars: {
+                title: "Марс в Тельце",
+                icon: "♂",
+                color: "text-red-400",
+                header: "Упрямая Энергия",
+                text: `<p>Ты действуешь не спеша, но верно. Марс в Тельце наделяет тебя огромным запасом терпения и выносливости.</p>
+                       <p>Ты не любишь рисковать и суетиться. Но если ты поставила цель, ты идешь к ней, как танк — медленно и неотвратимо. В гневе ты страшна, но довести тебя до него непросто.</p>`
+            },
+            chart: {
+                title: "Натальная Карта",
+                icon: "🌌",
+                color: "text-indigo-300",
+                header: "Расположение на 22.05.1996",
+                text: `<p>На 22 мая картина неба стабилизировалась:</p>
+                       <ul class="list-disc pl-5 mt-2 space-y-2 marker:text-indigo-400">
+                           <li><strong>Солнце (☉)</strong>: 1-2° Близнецов (Начало цикла).</li>
+                           <li><strong>Луна (☽)</strong>: ~15° Рака (Самый центр обители).</li>
+                           <li><strong>Юпитер (♃)</strong>: в Козероге (Стремление к статусу).</li>
+                       </ul>
+                       <p class="mt-4 text-indigo-200"><em>Ты — гармоничное сочетание легкости общения (Близнецы) и глубины чувств (Рак).</em></p>`,
+                isChart: true
+            }
+        };
+
+        // --- NAVIGATION LOGIC ---
+
+        function goToMenu() {
+            switchScreen('welcome-screen', 'menu-screen');
+        }
+
+        function showPrediction(key) {
+            const data = natalData[key];
+            const iconContainer = document.getElementById('planet-icon');
+            const titleEl = document.getElementById('planet-title');
+            const headerEl = document.getElementById('result-header');
+            const textEl = document.getElementById('result-text');
+            const chartVisual = document.getElementById('chart-visual');
+
+            // Reset visuals
+            iconContainer.className = `text-8xl mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] ${data.color}`;
+            iconContainer.innerHTML = data.icon;
+            iconContainer.style.display = data.isChart ? 'none' : 'block';
+            
+            chartVisual.style.display = data.isChart ? 'block' : 'none';
+            if (data.isChart) renderSVGChart();
+
+            titleEl.innerText = data.title;
+            headerEl.innerText = data.header;
+            textEl.innerHTML = data.text;
+
+            switchScreen('menu-screen', 'result-screen');
+        }
+
+        function goBack(target) {
+            if (target === 'welcome') {
+                switchScreen('menu-screen', 'welcome-screen');
+            } else {
+                switchScreen('result-screen', 'menu-screen');
+            }
+        }
+
+        function switchScreen(fromId, toId) {
+            const fromEl = document.getElementById(fromId);
+            const toEl = document.getElementById(toId);
+
+            fromEl.style.opacity = '0';
+            setTimeout(() => {
+                fromEl.classList.add('hidden');
+                toEl.classList.remove('hidden');
+                void toEl.offsetWidth;
+                toEl.style.opacity = '1';
+                toEl.classList.add('fade-in');
+            }, 300);
+        }
+
+        // --- VISUALIZATION: STAR MAP BACKGROUND ---
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let width, height;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            createStars();
+        }
+
+        function createStars() {
+            stars = [];
+            const count = Math.floor((width * height) / 3000);
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 2,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.05 + 0.01
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.opacity += (Math.random() - 0.5) * 0.05;
+                if (star.opacity < 0) star.opacity = 0;
+                if (star.opacity > 1) star.opacity = 1;
+                star.y -= star.speed;
+                if (star.y < 0) star.y = height;
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animateStars();
+
+        // --- VISUALIZATION: SVG CHART ---
+        function renderSVGChart() {
+            const container = document.getElementById('chart-visual');
+            const svgContent = `
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-[spin_60s_linear_infinite]">
+                <!-- Zodiac Wheel Base -->
+                <circle cx="100" cy="100" r="98" fill="none" stroke="#818cf8" stroke-width="1" stroke-opacity="0.5" />
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#818cf8" stroke-width="1" stroke-opacity="0.3" />
+                
+                ${[...Array(12)].map((_, i) => 
+                    `<line x1="100" y1="100" x2="${100 + 98 * Math.cos(i * Math.PI / 6)}" y2="${100 + 98 * Math.sin(i * Math.PI / 6)}" stroke="#818cf8" stroke-width="0.5" stroke-opacity="0.3" />`
+                ).join('')}
+
+                <!-- Planets (Positions for May 22 1996) -->
+                <!-- Sun: Gemini 1-2 deg (Approx 62 degrees on wheel if 0 is Aries) -->
+                <g transform="rotate(62 100 100)">
+                    <line x1="100" y1="70" x2="100" y2="20" stroke="#fbbf24" stroke-width="1" />
+                    <circle cx="100" cy="20" r="4" fill="#fbbf24" />
+                    <text x="100" y="15" fill="#fbbf24" font-size="8" text-anchor="middle" transform="rotate(-62 100 15)">☉</text>
+                </g>
+
+                <!-- Moon: Cancer ~15 deg (Approx 105 degrees) -->
+                <g transform="rotate(105 100 100)">
+                    <line x1="100" y1="70" x2="100" y2="30" stroke="#e5e7eb" stroke-width="1" />
+                    <circle cx="100" cy="30" r="3" fill="#e5e7eb" />
+                    <text x="100" y="25" fill="#e5e7eb" font-size="8" text-anchor="middle" transform="rotate(-105 100 25)">☽</text>
+                </g>
+
+                <!-- Venus: Gemini (Approx 75 deg) -->
+                 <g transform="rotate(75 100 100)">
+                    <line x1="100" y1="70" x2="100" y2="45" stroke="#f9a8d4" stroke-width="1" />
+                    <circle cx="100" cy="45" r="3" fill="#f9a8d4" />
+                    <text x="100" y="40" fill="#f9a8d4" font-size="8" text-anchor="middle" transform="rotate(-75 100 40)">♀</text>
+                </g>
+
+                <!-- Mars: Taurus (Approx 45 deg) -->
+                <g transform="rotate(45 100 100)">
+                    <line x1="100" y1="70" x2="100" y2="35" stroke="#f87171" stroke-width="1" />
+                    <circle cx="100" cy="35" r="3" fill="#f87171" />
+                    <text x="100" y="30" fill="#f87171" font-size="8" text-anchor="middle" transform="rotate(-45 100 30)">♂</text>
+                </g>
+
+                <!-- Jupiter: Capricorn (Approx 280 deg) -->
+                 <g transform="rotate(280 100 100)">
+                    <line x1="100" y1="70" x2="100" y2="25" stroke="#fcd34d" stroke-width="1" />
+                    <circle cx="100" cy="25" r="4" fill="#fcd34d" />
+                    <text x="100" y="20" fill="#fcd34d" font-size="8" text-anchor="middle" transform="rotate(-280 100 20)">♃</text>
+                </g>
+
+                <!-- Center -->
+                <circle cx="100" cy="100" r="5" fill="#e2e8f0" />
+            </svg>
+            `;
+            container.innerHTML = svgContent;
+        }
+    </script>
+</body>
+</html>
