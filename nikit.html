@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKITA | CYBER-LINK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --cyan: #00f3ff;
+            --pink: #ff00ff;
+            --yellow: #ffee00;
+            --bg-dark: #050510;
+            --panel: rgba(20, 20, 35, 0.7);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .cyber-font { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+
+        /* --- ФОН: КИБЕР-СЕТКА (RETROWAVE GRID) --- */
+        .cyber-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: 
+                linear-gradient(transparent 0%, var(--bg-dark) 80%),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            transform: perspective(500px) rotateX(60deg) scale(2);
+            transform-origin: top center;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 0 0, 0 40px, 0 40px; }
+        }
+
+        /* --- СТЕКЛЯННЫЕ ПАНЕЛИ --- */
+        .glass-panel {
+            background: var(--panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-left: 4px solid var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+            position: relative;
+        }
+        
+        .glass-panel::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--pink);
+            border-right: 2px solid var(--pink);
+        }
+
+        /* --- КНОПКИ --- */
+        .cyber-btn {
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1));
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            cursor: pointer;
+        }
+        .cyber-btn:hover {
+            background: var(--cyan); color: #000;
+            box-shadow: 0 0 25px var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        .btn-pink {
+            border-color: var(--pink); color: var(--pink);
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.1));
+        }
+        .btn-pink:hover {
+            background: var(--pink); color: #000;
+            box-shadow: 0 0 25px var(--pink);
+        }
+
+        /* --- ГЛИТЧ ТЕКСТ --- */
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
+        }
+        .glitch::before { color: var(--pink); z-index: -1; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+        .glitch::after { color: var(--cyan); z-index: -2; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+
+        @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px,0); } 100% { clip-path: inset(60% 0 10% 0); transform: translate(2px,0); } }
+        @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(2px,0); } 100% { clip-path: inset(80% 0 5% 0); transform: translate(-2px,0); } }
+
+        /* --- АНИМАЦИИ --- */
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        .spin-slow { animation: spin 60s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* ТЕКСТ ОТЧЕТА */
+        .report h4 { color: var(--cyan); font-family: 'Orbitron'; margin-top: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; font-size: 1.2rem; }
+        .report p { color: #ccc; margin-bottom: 1rem; line-height: 1.6; font-size: 1rem; }
+        .report ul { list-style: none; padding: 0; margin-bottom: 1rem; }
+        .report li { color: #aaa; margin-bottom: 0.5rem; padding-left: 1rem; position: relative; }
+        .report li::before { content: '► '; color: var(--pink); position: absolute; left: 0; }
+
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <div id="app" class="relative z-10 w-full max-w-6xl mx-auto p-4 flex-grow flex flex-col">
+
+        <div id="screen-intro" class="flex-grow flex flex-col items-center justify-center text-center fade-in">
+            <div class="w-32 h-32 border-2 border-cyan-500 rounded-full flex items-center justify-center mb-8 relative cursor-pointer group hover:border-pink-500 transition-colors bg-black/50" onclick="startQuest()">
+                <div class="absolute inset-0 rounded-full border border-cyan-500 animate-ping opacity-20"></div>
+                <i class="fas fa-fingerprint text-5xl text-cyan-500 group-hover:text-pink-500 transition-colors"></i>
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-black mb-2 text-white glitch" data-text="NIKITA">NIKITA</h1>
+            <p class="text-pink-500 font-mono tracking-widest text-sm md:text-lg mb-10">NEURAL LINK: 24.01.1992 | KRASNOYARSK</p>
+
+            <button onclick="startQuest()" class="cyber-btn px-10 py-4 text-xl">
+                CONNECT <i class="fas fa-link ml-2"></i>
+            </button>
+        </div>
+
+        <div id="screen-quest" class="hidden flex-grow flex items-center justify-center">
+            <div class="glass-panel p-8 w-full max-w-2xl">
+                <div class="flex justify-between text-xs text-cyan-500 font-mono mb-6 border-b border-gray-700 pb-2">
+                    <span>SYSTEM CALIBRATION</span>
+                    <span id="q-progress">0%</span>
+                </div>
+
+                <h3 id="q-text" class="text-2xl font-bold mb-8 text-white leading-relaxed"></h3>
+
+                <div id="q-options" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <div id="screen-dashboard" class="hidden fade-in pb-24">
+            
+            <div class="flex flex-wrap justify-between items-end mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="text-4xl cyber-font text-white glitch" data-text="DASHBOARD">DASHBOARD</h2>
+                    <p class="text-gray-400 font-mono text-sm mt-1">ARCHETYPE: <span class="text-pink-500">SYSTEM ARCHITECT</span></p>
+                </div>
+                <div class="text-right mt-4 md:mt-0 font-mono text-xs text-cyan-500">
+                    <p>SUN: AQUARIUS ♒</p>
+                    <p>MOON: VIRGO ♍</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-panel p-4 flex justify-center items-center aspect-square bg-black/30">
+                        <div class="relative w-full h-full max-w-[320px] max-h-[320px]">
+                            <svg viewBox="0 0 200 200" class="w-full h-full spin-slow">
+                                <circle cx="100" cy="100" r="98" stroke="#333" stroke-width="1" fill="none"/>
+                                <circle cx="100" cy="100" r="80" stroke="#00f3ff" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.5"/>
+                                <circle cx="100" cy="100" r="60" stroke="#ff00ff" stroke-width="0.5" opacity="0.3"/>
+                                
+                                <g transform="rotate(304 100 100)">
+                                    <line x1="100" y1="100" x2="100" y2="10" stroke="yellow" stroke-width="1"/>
+                                    <circle cx="100" cy="10" r="4" fill="yellow" stroke="black"/>
+                                </g>
+                                <g transform="rotate(165 100 100)">
+                                    <line x1="100" y1="100" x2="100" y2="25" stroke="white" stroke-width="1" opacity="0.5"/>
+                                    <circle cx="100" cy="25" r="3" fill="white"/>
+                                </g>
+                                <g transform="rotate(290 100 100)">
+                                    <line x1="100" y1="100" x2="100" y2="35" stroke="red" stroke-width="1" opacity="0.5"/>
+                                    <circle cx="100" cy="35" r="3" fill="red"/>
+                                </g>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="bg-black/80 p-2 rounded border border-gray-700 text-center">
+                                    <div class="text-lg font-bold text-white">1992</div>
+                                    <div class="text-[10px] text-cyan-500">JAN 24</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4">
+                        <h3 class="text-sm text-cyan-500 mb-3 border-b border-gray-800 pb-1">ENERGY LEVELS</h3>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="flex justify-between"><span>AIR (IDEAS)</span> <div class="w-32 bg-gray-800 h-1.5"><div class="bg-yellow-400 h-1.5" style="width: 45%"></div></div></div>
+                            <div class="flex justify-between"><span>EARTH (WORK)</span> <div class="w-32 bg-gray-800 h-1.5"><div class="bg-green-500 h-1.5" style="width: 40%"></div></div></div>
+                            <div class="flex justify-between"><span>FIRE/WATER</span> <div class="w-32 bg-gray-800 h-1.5"><div class="bg-red-500 h-1.5" style="width: 15%"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div onclick="openModal('sun')" class="glass-panel p-5 hover:border-yellow-400 transition cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold group-hover:text-yellow-400">ЯДРО (SUN)</h3>
+                            <i class="fas fa-sun text-yellow-500 text-xl spin-slow"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">Водолей ♒. Гений, бунтарь, визионер.</p>
+                    </div>
+
+                    <div onclick="openModal('moon')" class="glass-panel p-5 hover:border-blue-400 transition cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold group-hover:text-blue-400">ПСИХИКА (MOON)</h3>
+                            <i class="fas fa-moon text-blue-500 text-xl"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">Дева ♍. Аналитик, перфекционист.</p>
+                    </div>
+
+                    <div onclick="openModal('money')" class="glass-panel p-5 md:col-span-2 hover:border-green-400 transition cursor-pointer group bg-gradient-to-r from-transparent to-green-900/20">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold group-hover:text-green-400">БИЗНЕС-КОД</h3>
+                            <i class="fas fa-chart-pie text-green-500 text-xl"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">Марс в Козероге. Стратегия больших систем и долгой игры.</p>
+                    </div>
+
+                    <div onclick="openModal('love')" class="glass-panel p-5 hover:border-pink-400 transition cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold group-hover:text-pink-400">ОТНОШЕНИЯ</h3>
+                            <i class="fas fa-heart text-pink-500 text-xl"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">Венера в Козероге. Статус важнее драмы.</p>
+                    </div>
+
+                    <div onclick="openModal('future')" class="glass-panel p-5 hover:border-purple-500 transition cursor-pointer group bg-purple-900/10">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold text-purple-400 glitch" data-text="ПРОГНОЗ 2026">ПРОГНОЗ 2026</h3>
+                            <i class="fas fa-eye text-purple-500 text-xl animate-pulse"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">Год Плутона. Трансформация власти.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4" onclick="closeModal()">
+        <div class="glass-panel w-full max-w-2xl h-full md:h-auto md:max-h-[85vh] flex flex-col p-0 relative transform scale-95 opacity-0 transition-all duration-300" id="modal-box" onclick="event.stopPropagation()">
+            
+            <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                <h3 id="m-title" class="text-2xl font-bold text-cyan-500 cyber-font">DATA</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-pink-500 text-2xl">&times;</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow" id="m-body">
+                </div>
+
+            <div class="p-4 border-t border-gray-700 text-center">
+                <button onclick="closeModal()" class="btn-pink px-8 py-2 text-sm font-bold">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="nav-bar" class="fixed bottom-0 left-0 w-full z-40 transform translate-y-full transition-transform duration-500">
+        <div class="bg-black/95 border-t border-cyan-900 px-6 py-3 flex justify-between items-center backdrop-blur-md shadow-[0_-5px_20px_rgba(0,243,255,0.1)] max-w-6xl mx-auto relative rounded-t-xl">
+            
+            <button onclick="location.reload()" class="flex-1 flex flex-col items-center group">
+                <i class="fas fa-power-off text-lg text-gray-500 group-hover:text-cyan-500 transition-colors mb-1"></i>
+                <span class="text-[10px] font-bold text-gray-600 group-hover:text-cyan-500 tracking-widest transition-colors">RESET</span>
+            </button>
+            
+            <div class="relative -top-6 mx-4">
+                <button onclick="closeModal()" class="w-16 h-16 bg-black border-2 border-cyan-500 rounded-full flex items-center justify-center text-cyan-500 shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:scale-110 hover:shadow-[0_0_30px_rgba(255,0,255,0.6)] hover:border-pink-500 hover:text-pink-500 transition-all duration-300 z-50">
+                    <i class="fas fa-home text-2xl"></i>
+                </button>
+            </div>
+
+            <a href="https://t.me/TAE_PZ" target="_blank" class="flex-1 flex flex-col items-center group no-underline">
+                <i class="fas fa-comment-dots text-lg text-gray-500 group-hover:text-pink-500 transition-colors mb-1"></i>
+                <span class="text-[10px] font-bold text-gray-600 group-hover:text-pink-500 tracking-widest transition-colors">TAEN</span>
+            </a>
+            
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-full bg-transparent -z-10"></div>
+    </div>
+
+    <script>
+        // --- КОНТЕНТ (ДАННЫЕ ИЗ PDF) ---
+        const reports = {
+            sun: `
+                <div class="report">
+                    <h4>СОЛНЦЕ В ВОДОЛЕЕ ♒</h4>
+                    <p>Никита, твой архетип — <span class="text-cyan-400 font-bold">АРХИТЕКТОР СИСТЕМ</span>. Ты рожден под знаком инноваций. Твой мозг работает не как у всех: ты видишь будущее раньше остальных.</p>
+                    <ul>
+                        <li>Визионерство: умение предсказывать тренды.</li>
+                        <li>Свобода: ты не переносишь жесткие рамки и контроль.</li>
+                        <li>Интеллект: эмоции вторичны, логика первична.</li>
+                    </ul>
+                    <p class="text-sm text-gray-500 mt-4">СОВЕТ: Твоя холодность может отпугивать. Учись "переводить" свои гениальные идеи на язык простых людей.</p>
+                </div>
+            `,
+            moon: `
+                <div class="report">
+                    <h4>ЛУНА В ДЕВЕ ♍ (ПОДСОЗНАНИЕ)</h4>
+                    <p>Внешне ты бунтарь, но внутри — <span class="text-cyan-400 font-bold">ПЕРФЕКЦИОНИСТ</span>. Твоя психика отдыхает только тогда, когда вокруг порядок и всё работает как часы.</p>
+                    <ul>
+                        <li>Тебе нужно быть полезным и продуктивным.</li>
+                        <li>Хаос вызывает у тебя физический стресс.</li>
+                        <li>Ты замечаешь детали, которые не видят другие.</li>
+                    </ul>
+                    <p class="text-sm text-gray-500 mt-4">РИСК: "Горе от ума". Не критикуй себя слишком строго. Идеального мира не существует, но ты можешь его построить.</p>
+                </div>
+            `,
+            money: `
+                <div class="report">
+                    <h4>СТРАТЕГИЯ: МАРС В КОЗЕРОГЕ ♑</h4>
+                    <p>Это положение миллионеров. Ты не спринтер, ты — <span class="text-cyan-400 font-bold">ТАНК</span>. Твоя энергия холодная, расчетливая и бесконечная.</p>
+                    <h4>ГДЕ ДЕНЬГИ?</h4>
+                    <ul>
+                        <li>Построение структур (Бизнес, IT, Строительство).</li>
+                        <li>Управление большими системами.</li>
+                        <li>Долгосрочные инвестиции.</li>
+                    </ul>
+                    <p>Ты добьешься успеха не через удачу, а через железную дисциплину и план.</p>
+                </div>
+            `,
+            love: `
+                <div class="report">
+                    <h4>ВЕНЕРА В КОЗЕРОГЕ ♑</h4>
+                    <p>В любви ты консерватор. Тебе не нужны драмы и "качели". Тебе нужен <span class="text-pink-400 font-bold">ПАРТНЕР ПО БИЗНЕСУ</span> и жизни.</p>
+                    <p>Ты ценишь статус, амбиции и верность. Твоя любовь выражается не словами, а делами и ресурсами.</p>
+                </div>
+            `,
+            future: `
+                <div class="report">
+                    <h4 class="glitch" data-text="ПРОГНОЗ 2026">⚠️ ПРОГНОЗ 2026</h4>
+                    <p>Плутон окончательно заходит в твой знак (Водолей). Это бывает раз в жизни. Это год <span class="text-pink-400 font-bold">ТОТАЛЬНОЙ ТРАНСФОРМАЦИИ</span>.</p>
+                    <ul>
+                        <li>Весна 2026: Возможен резкий взлет в карьере или смена деятельности.</li>
+                        <li>Задача: Взять власть. Перестать быть исполнителем и стать Лидером.</li>
+                        <li>Риск: Если будешь цепляться за старое, Вселенная отнимет это силой.</li>
+                    </ul>
+                    <div class="mt-4 p-4 border border-cyan-500 bg-cyan-900/20 text-center font-bold">
+                        ВРЕМЯ РИСКОВАТЬ И СТРОИТЬ НОВОЕ.
+                    </div>
+                </div>
+            `
+        };
+
+        // --- КВЕСТ ---
+        const questSteps = [
+            {
+                text: "СИСТЕМА ОБНАРУЖИЛА ПОЛЬЗОВАТЕЛЯ.<br>ТРЕБУЕТСЯ КАЛИБРОВКА ЛИЧНОСТИ.<br><br>Твой метод решения проблем?",
+                options: [
+                    { text: "Анализирую данные (Дева)", action: "next" },
+                    { text: "Ломаю старую систему (Водолей)", action: "next" }
+                ]
+            },
+            {
+                text: "КРИТИЧЕСКАЯ ОШИБКА В ПРОЕКТЕ.<br>ТВОИ ДЕЙСТВИЯ?",
+                options: [
+                    { text: "Собираю команду и штурмлю", action: "next" },
+                    { text: "Беру всё на себя и пашу", action: "next" }
+                ]
+            },
+            {
+                text: "КАЛИБРОВКА ЗАВЕРШЕНА.<br>ДОСТУП К ФАЙЛАМ СУДЬБЫ РАЗРЕШЕН.",
+                options: [
+                    { text: "ОТКРЫТЬ ДАШБОРД", action: "finish" }
+                ]
+            }
+        ];
+
+        let currentQ = 0;
+
+        function startQuest() {
+            document.getElementById('screen-intro').classList.add('hidden');
+            document.getElementById('screen-quest').classList.remove('hidden');
+            renderQuest();
+        }
+
+        function renderQuest() {
+            const step = questSteps[currentQ];
+            document.getElementById('q-progress').innerText = `${(currentQ * 33)}%`;
+            document.getElementById('q-text').innerHTML = step.text;
+            
+            const optBox = document.getElementById('q-options');
+            optBox.innerHTML = '';
+
+            step.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'cyber-btn w-full py-4 text-left px-6 text-lg hover:pl-8';
+                btn.innerHTML = `> ${opt.text}`;
+                btn.onclick = () => {
+                    if (opt.action === 'finish') {
+                        document.getElementById('screen-quest').classList.add('hidden');
+                        document.getElementById('screen-dashboard').classList.remove('hidden');
+                        document.getElementById('nav-bar').classList.remove('translate-y-full');
+                    } else {
+                        currentQ++;
+                        renderQuest();
+                    }
+                };
+                optBox.appendChild(btn);
+            });
+        }
+
+        // --- МОДАЛКА ---
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const box = document.getElementById('modal-box');
+            const title = document.getElementById('m-title');
+            const body = document.getElementById('m-body');
+
+            title.innerText = type === 'money' ? 'FINANCE' : type.toUpperCase();
+            body.innerHTML = reports[type];
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const box = document.getElementById('modal-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    </script>
+</body>
+</html>
