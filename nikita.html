@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol TAEN | NIKITA</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #e0e0e0;
+            --accent: #9d4edd; /* Фиолетовый */
+            --accent-glow: rgba(157, 78, 221, 0.6);
+            --gold: #ffd700;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* ФОН (Звезды) */
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 2px);
+            background-size: 550px 550px, 350px 350px;
+            animation: starsMove 150s linear infinite;
+        }
+        @keyframes starsMove { 100% { background-position: 550px 550px, 350px 350px; } }
+
+        /* --- ЭКРАН 1: ВХОД (SCANNER) --- */
+        #start-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        .scanner-box {
+            width: 250px; height: 250px;
+            border: 2px solid var(--border);
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 20px;
+            background: var(--glass);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .fingerprint {
+            font-size: 4rem; color: #555; transition: 0.5s;
+        }
+
+        .scanner-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+            animation: scan 2s infinite linear;
+            display: none; /* Скрыта до нажатия */
+        }
+
+        .scanner-text {
+            margin-top: 20px; font-family: monospace; color: var(--accent); letter-spacing: 2px;
+            min-height: 20px;
+        }
+
+        /* --- ЭКРАН 2: ДАШБОРД (ГЛАВНАЯ) --- */
+        #dashboard {
+            display: none; /* Скрыто */
+            padding: 20px;
+            max-width: 600px; margin: 0 auto;
+            opacity: 0; transition: opacity 1.5s ease;
+        }
+
+        header {
+            text-align: center; margin-bottom: 30px; margin-top: 20px;
+        }
+        .client-name {
+            font-size: 2.5rem; font-weight: 800; letter-spacing: 5px; margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .client-data {
+            color: var(--gold); font-size: 0.9rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* ВИЗУАЛИЗАЦИЯ КАРТЫ (КРУГ) */
+        .chart-visual {
+            position: relative; width: 280px; height: 280px; margin: 0 auto 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a0b2e 30%, #000 70%);
+            box-shadow: 0 0 40px var(--accent-glow);
+            border: 1px solid var(--border);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .zodiac-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 1px dashed rgba(157, 78, 221, 0.3);
+            animation: spin 60s linear infinite;
+        }
+        .planet {
+            position: absolute; top: 50%; left: 50%;
+            height: 48%; width: 2px;
+            transform-origin: top center;
+        }
+        .planet::after {
+            content: ''; position: absolute; bottom: 0; left: -4px;
+            width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        /* СЕТКА КНОПОК (ДОМА) */
+        .grid-menu {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+
+        .menu-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 20px; border-radius: 15px;
+            text-align: center; cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .menu-card:hover {
+            border-color: var(--accent);
+            background: rgba(157, 78, 221, 0.1);
+            transform: translateY(-3px);
+        }
+        .card-icon { font-size: 1.5rem; display: block; margin-bottom: 10px; }
+        .card-title { font-size: 0.9rem; font-weight: bold; color: #fff; }
+
+        .btn-future {
+            grid-column: span 2;
+            background: linear-gradient(45deg, #3c096c, #000);
+            border: 1px solid var(--gold);
+            padding: 25px;
+        }
+        .btn-future .card-title { color: var(--gold); letter-spacing: 2px; }
+
+        /* --- МОДАЛЬНОЕ ОКНО (ПОДРОБНОСТИ) --- */
+        #modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 90vh;
+            background: #0a0a0a;
+            border-top-left-radius: 30px; border-top-right-radius: 30px;
+            border-top: 2px solid var(--accent);
+            z-index: 200;
+            transition: bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            padding: 30px; box-sizing: border-box;
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+        #modal.active { bottom: 0; }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .close-btn {
+            font-size: 1.5rem; color: #777; cursor: pointer; background: none; border: none;
+        }
+        .modal-title { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+        .modal-content { font-size: 1rem; line-height: 1.6; color: #ccc; }
+        
+        .tag { display: inline-block; padding: 5px 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 15px; font-size: 0.8rem; color: var(--gold); }
+
+        /* АНИМАЦИИ */
+        @keyframes scan { 0% {top: 0;} 50% {top: 100%;} 100% {top: 0;} }
+        @keyframes spin { 100% {transform: rotate(360deg);} }
+        @keyframes pulse { 0% {box-shadow: 0 0 30px rgba(0,0,0,0.5);} 50% {box-shadow: 0 0 60px var(--accent);} 100% {box-shadow: 0 0 30px rgba(0,0,0,0.5);} }
+
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div id="start-screen">
+        <div class="scanner-box" id="scan-trigger" onclick="activateScanner()">
+            <div class="scanner-line" id="scan-line"></div>
+            <div class="fingerprint" id="finger-icon">🆔</div>
+        </div>
+        <div class="scanner-text" id="scan-text">НАЖМИТЕ ДЛЯ ИДЕНТИФИКАЦИИ</div>
+    </div>
+
+    <div id="dashboard">
+        <header>
+            <div style="font-size: 0.8rem; letter-spacing: 3px; color: #777; margin-bottom: 10px;">ПРОТОКОЛ ТАЕН</div>
+            <h1 class="client-name">НИКИТА</h1>
+            <div class="client-data">24.01.1992 • Красноярск</div>
+        </header>
+
+        <div class="chart-visual">
+            <div class="zodiac-ring"></div>
+            <div class="planet" style="transform: rotate(310deg);"><span style="position:absolute; bottom:-20px; left:-10px; color:#ffd700;">☉</span></div>
+            <div class="planet" style="transform: rotate(160deg);"><span style="position:absolute; bottom:-20px; left:-10px; color:#fff;">☽</span></div>
+            <div class="planet" style="transform: rotate(315deg); height: 40%;"><span style="position:absolute; bottom:-20px; left:-10px; font-size: 0.8rem; color:#aaa;">♄</span></div>
+            
+            <div style="position: absolute; text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold;">♒</div>
+                <div style="font-size: 0.7rem; color: #777;">SUN</div>
+            </div>
+        </div>
+
+        <div class="grid-menu">
+            <div class="menu-card" onclick="openModal('ego')">
+                <span class="card-icon">👤</span>
+                <span class="card-title">ЯДРО ЛИЧНОСТИ</span>
+            </div>
+
+            <div class="menu-card" onclick="openModal('money')">
+                <span class="card-icon">💎</span>
+                <span class="card-title">ФИНАНСЫ</span>
+            </div>
+
+            <div class="menu-card" onclick="openModal('love')">
+                <span class="card-icon">♥</span>
+                <span class="card-title">ОТНОШЕНИЯ</span>
+            </div>
+
+            <div class="menu-card" onclick="openModal('career')">
+                <span class="card-icon">👑</span>
+                <span class="card-title">КАРЬЕРА</span>
+            </div>
+
+            <div class="menu-card btn-future" onclick="openModal('future')">
+                <span class="card-icon">🚀</span>
+                <span class="card-title">ПРОГНОЗ 2026</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; font-size: 0.8rem; color: #555;">
+            TAEN PROJECT V.1.0
+        </div>
+    </div>
+
+    <div id="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="m-title">ЗАГОЛОВОК</div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-content" id="m-content">
+            </div>
+    </div>
+
+    <script>
+        // --- ЛОГИКА ИНТЕРФЕЙСА ---
+
+        // 1. Вход (Сканер)
+        function activateScanner() {
+            const line = document.getElementById('scan-line');
+            const text = document.getElementById('scan-text');
+            const icon = document.getElementById('finger-icon');
+            const startScreen = document.getElementById('start-screen');
+            const dashboard = document.getElementById('dashboard');
+
+            // Запуск анимации
+            line.style.display = 'block';
+            icon.style.color = '#9d4edd';
+            text.innerText = 'ИДЕНТИФИКАЦИЯ: NIKITA...';
+
+            setTimeout(() => {
+                text.innerText = 'ДОСТУП РАЗРЕШЕН';
+                text.style.color = '#0f0';
+                
+                setTimeout(() => {
+                    startScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        startScreen.style.display = 'none';
+                        dashboard.style.display = 'block';
+                        setTimeout(() => dashboard.style.opacity = '1', 50);
+                    }, 500);
+                }, 800);
+            }, 2000);
+        }
+
+        // 2. Данные для модальных окон (Контент карты)
+        // Здесь мы используем данные из
+        const data = {
+            'ego': `
+                <span class="tag">☉ СОЛНЦЕ В ВОДОЛЕЕ</span>
+                <p>Вы — человек будущего. Свобода для вас не пустой звук, а необходимость. Ваша суперсила — видеть мир не таким, какой он есть, а каким он может быть. Вы часто идете против течения, и именно там находите успех.</p>
+                <br>
+                <span class="tag">ASC АСЦЕНДЕНТ</span>
+                <p>Ваша "маска" и первое впечатление. Люди видят вас как нестандартного, возможно, слегка отстраненного интеллектуала.</p>
+            `,
+            'money': `
+                <span class="tag">ДОМ 2: РЕСУРСЫ</span>
+                <p>Ваши деньги приходят через интеллект, IT, новые технологии или работу с коллективами. Стандартные схемы "от звонка до звонка" убивают ваш финансовый поток. Инвестируйте в знания.</p>
+            `,
+            'love': `
+                <span class="tag">ДОМ 7: ПАРТНЕРСТВО</span>
+                <p>В отношениях вам нужен прежде всего Друг. Ревность и контроль вас задушат. Идеальный партнер — тот, кто разделяет ваши безумные идеи и не тянет в бытовую рутину.</p>
+            `,
+            'career': `
+                <span class="tag">MC (ЗЕНИТ)</span>
+                <p>Ваша цель — реформировать старое. Строгая иерархия вам не подходит. Лучшая реализация: стартапы, наука, авиация, астрология или фриланс высокого уровня.</p>
+            `,
+            'future': `
+                <span class="tag" style="color:#fff; background:var(--accent);">⚠️ ВАЖНО</span>
+                <p><strong>2026 год — год Плутона в Водолее.</strong></p>
+                <p>Для вас это год тотальной трансформации, так как Плутон заходит в ваш знак. Старая жизнь будет рушиться, чтобы освободить место для новой силы. </p>
+                <ul>
+                    <li><strong>Весна:</strong> Резкий скачок в доходах, если рискнете.</li>
+                    <li><strong>Осень:</strong> Смена круга общения.</li>
+                </ul>
+            `
+        };
+
+        // 3. Управление модалкой
+        const modal = document.getElementById('modal');
+        const mTitle = document.getElementById('m-title');
+        const mContent = document.getElementById('m-content');
+
+        function openModal(type) {
+            let title = '';
+            if(type === 'ego') title = 'ЛИЧНОСТЬ';
+            if(type === 'money') title = 'ФИНАНСЫ';
+            if(type === 'love') title = 'ЛЮБОВЬ';
+            if(type === 'career') title = 'КАРЬЕРА';
+            if(type === 'future') title = 'ПРОГНОЗ 2026';
+
+            mTitle.innerText = title;
+            mContent.innerHTML = data[type];
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
