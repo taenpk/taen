@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Натальная карта онлайн | Персональный сайт от ТАЕН | Гороскоп 2026</title>
+    
+    <meta name="description" content="Закажите профессиональный разбор натальной карты в формате личного Web-сайта. Астролог ТАЕН. Детальный прогноз на 2026 год: финансы, отношения, карма. Уникальный цифровой подарок.">
+    
+    <meta name="keywords" content="натальная карта, астролог онлайн, соляр 2026, гороскоп по дате рождения, астрологический прогноз, кармические узлы, синастрия, подарок на день рождения, веб-дизайн, таен астрология, разбор матрицы судьбы, личный сайт визитка">
+    
+    <link rel="canonical" href="https://taen.ru">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="ТАЕН | Натальная карта будущего">
+    <meta property="og:description" content="Не читай PDF. Смотри свою судьбу. Твой гороскоп как приложение в смартфоне.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://taen.ru">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/050505/9d4edd?text=TAEN+ASTRO+WEB">
+    <meta property="og:site_name" content="ТАЕН Project">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "ТАЕН Астрология",
+      "image": "https://via.placeholder.com/1200x630/050505/9d4edd?text=TAEN",
+      "description": "Создание натальных карт в формате персональных веб-сайтов с анимацией.",
+      "url": "https://taen.ru",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "RU",
+        "addressLocality": "Moscow"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://taen.ru",
+        "priceCurrency": "RUB",
+        "price": "4990",
+        "availability": "https://schema.org/InStock",
+        "description": "Персональный сайт-разбор натальной карты + Прогноз 2026"
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "ТАЕН"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "В чем отличие от обычной натальной карты?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Вместо текстового файла вы получаете интерактивный веб-сайт с анимацией, удобный для смартфона."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Что входит в прогноз на 2026 год?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Детальный анализ транзитов планет: финансы, карьера, личная жизнь и кармические задачи."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        /* СТИЛИ ОСТАЮТСЯ ТЕМИ ЖЕ, ДОБАВИМ НЕМНОГО ДЛЯ ТЕКСТОВОГО БЛОКА */
+        :root { --bg: #050505; --text: #ffffff; --accent: #9d4edd; --accent-glow: rgba(157, 78, 221, 0.5); --gold: #ffd700; --dark-card: rgba(255,255,255,0.03); }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; line-height: 1.6; }
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px), radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 2px); background-size: 550px 550px, 350px 350px; animation: starsMove 150s linear infinite; }
+        @keyframes starsMove { 100% { background-position: 550px 550px, 350px 350px; } }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        header { padding-top: 60px; margin-bottom: 20px; text-align: center; }
+        .logo { font-size: 3.5rem; font-weight: 900; letter-spacing: 8px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px var(--accent-glow); margin-bottom: 10px; }
+        .subtitle { color: #888; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 4px; }
+        .hero-text { text-align: center; max-width: 700px; margin: 30px auto; font-size: 1.2rem; color: #ddd; }
+        .highlight { color: var(--gold); font-weight: bold; border-bottom: 1px solid rgba(255, 215, 0, 0.3); }
+        
+        /* Демонстрация */
+        .demo-wrapper { perspective: 1000px; margin: 50px 0; }
+        .phone-mockup { width: 280px; height: 560px; background: #000; border-radius: 40px; border: 6px solid #2a2a2a; box-shadow: 0 0 60px rgba(157, 78, 221, 0.3); position: relative; transform: rotateY(-10deg) rotateX(5deg); transition: transform 0.5s ease; overflow: hidden; }
+        .phone-mockup:hover { transform: rotateY(0) rotateX(0); }
+        .phone-screen { width: 100%; height: 100%; background: radial-gradient(circle at center, #240046 0%, #000 80%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; padding: 20px; box-sizing: border-box; text-align: center; }
+        .orb-anim { width: 60px; height: 60px; background: radial-gradient(circle, #e0aaff, #3c096c); border-radius: 50%; margin-bottom: 20px; box-shadow: 0 0 30px var(--accent); animation: pulse 3s infinite; }
+        .screen-text h3 { margin: 0; font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; }
+        .screen-text p { color: var(--gold); font-size: 0.8rem; margin-top: 5px; }
+        .loading-bar { width: 100px; height: 2px; background: #333; margin-top: 30px; position: relative; overflow: hidden; }
+        .loading-bar::after { content: ''; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: load 2s infinite; }
+
+        /* Кнопки и блоки */
+        .features-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 60px; }
+        .feature-card { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 280px; text-align: left; transition: 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .f-icon { font-size: 2rem; margin-bottom: 15px; display: block; }
+        .f-title { font-weight: bold; font-size: 1.1rem; color: #fff; display: block; margin-bottom: 5px; }
+        .f-desc { font-size: 0.9rem; color: #aaa; }
+        
+        .cta-wrapper { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 80px; }
+        .btn { text-decoration: none; padding: 18px 45px; border-radius: 50px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .btn-main { background: var(--accent); color: white; box-shadow: 0 0 30px rgba(157, 78, 221, 0.4); }
+        .btn-main:hover { box-shadow: 0 0 50px rgba(157, 78, 221, 0.7); transform: scale(1.05); }
+        .btn-sec { background: transparent; border: 2px solid var(--accent); color: white; }
+        .btn-sec:hover { background: rgba(157, 78, 221, 0.1); }
+        
+        /* FAQ Стили */
+        .seo-section { max-width: 800px; width: 100%; margin: 0 auto 60px; text-align: left; }
+        .seo-title { text-align: center; color: var(--gold); margin-bottom: 30px; font-size: 1.5rem; }
+        details { background: var(--dark-card); margin-bottom: 12px; padding: 15px 20px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
+        details:hover { border-color: rgba(255,255,255,0.1); }
+        details[open] { border-color: var(--accent); background: rgba(157, 78, 221, 0.05); }
+        summary { font-weight: 600; color: #eee; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: '+'; color: var(--accent); font-size: 1.2rem; }
+        details[open] summary::after { content: '-'; }
+        .faq-content { margin-top: 15px; color: #bbb; font-size: 0.95rem; }
+
+        /* ТЕКСТОВЫЙ БЛОК ДЛЯ SEO (Новый) */
+        .content-block { max-width: 800px; margin: 0 auto 60px; padding: 20px; color: #aaa; font-size: 0.95rem; text-align: justify; }
+        .content-block h2 { color: #fff; text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
+        .content-block p { margin-bottom: 15px; }
+
+        footer { border-top: 1px solid #222; width: 100%; padding: 30px 0; text-align: center; font-size: 0.8rem; color: #555; }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
+        @keyframes load { 0% {left: -100%;} 100% {left: 100%;} }
+        @media (max-width: 600px) { .logo { font-size: 2.5rem; } .btn { width: 100%; text-align: center; } .feature-card { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div class="container">
+        
+        <header>
+            <div class="logo">ТАЕН</div>
+            <h1 class="subtitle">Цифровой архитектор судеб</h1>
+        </header>
+
+        <section class="hero-text">
+            Твоя натальная карта — это не сухой текст.<br>
+            Это <span class="highlight">персональный сайт</span>, который всегда с тобой.
+        </section>
+
+        <div class="demo-wrapper">
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="orb-anim"></div>
+                    <div class="screen-text">
+                        <h3>АННА</h3>
+                        <p>24.08.1996 • 14:30</p>
+                    </div>
+                    <div style="margin-top: 40px; font-size: 0.7rem; color: #aaa; opacity: 0.8;">
+                        АНАЛИЗ ТРАНЗИТОВ...<br>
+                        ЗАГРУЗКА БУДУЩЕГО...
+                    </div>
+                    <div class="loading-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-wrapper">
+            <a href="https://t.me/TAE_PZ" class="btn btn-main">Заказать Разбор</a>
+            <a href="#" class="btn btn-sec">Telegram Канал</a>
+        </div>
+
+        <section class="features-grid">
+            <article class="feature-card">
+                <span class="f-icon">🌌</span>
+                <h3 class="f-title">Уникальный формат</h3>
+                <p class="f-desc">Вместо скучного PDF вы получаете красивую Web-страницу с анимацией. Это выглядит дорого и современно.</p>
+            </article>
+            <article class="feature-card">
+                <span class="f-icon">🔮</span>
+                <h3 class="f-title">Прогноз 2026</h3>
+                <p class="f-desc">Эксклюзивный блок: к чему готовиться в год глобальных перемен. Финансы, карьера, любовь.</p>
+            </article>
+            <article class="feature-card">
+                <span class="f-icon">🎁</span>
+                <h3 class="f-title">Идеальный подарок</h3>
+                <p class="f-desc">Скинуть другу ссылку на сайт о нем самом — это эмоция "Вау", которую невозможно забыть.</p>
+            </article>
+        </section>
+
+        <section class="seo-section" itemscope itemtype="https://schema.org/FAQPage">
+            <h2 class="seo-title">Частые вопросы</h2>
+            
+            <details itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary itemprop="name">В чем отличие от обычной натальной карты?</summary>
+                <div class="faq-content" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Классические астрологи присылают текстовые файлы. Проект ТАЕН создает IT-продукт: персональный сайт, адаптированный под смартфоны. Это удобнее читать, хранить и пересылать.</span>
+                </div>
+            </details>
+
+            <details itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary itemprop="name">Что нужно для заказа?</summary>
+                <div class="faq-content" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Только ваша дата, точное время и город рождения. Эти данные используются для расчета астрономических положений планет. Конфиденциальность гарантируется.</span>
+                </div>
+            </details>
+
+            <details itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary itemprop="name">Сколько делается сайт?</summary>
+                <div class="faq-content" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">В среднем разработка и анализ занимают 2-3 дня. Вы получаете постоянную ссылку, которая будет работать всегда.</span>
+                </div>
+            </details>
+        </section>
+
+        <section class="content-block">
+            <h2>Астрология цифровой эпохи</h2>
+            <p>
+                Мир меняется, и способы самопознания тоже. Мы объединили древние знания о звездах и современные веб-технологии. 
+                <strong>Натальная карта онлайн</strong> в формате персонального сайта — это новый стандарт в эзотерике. 
+                Больше не нужно разбираться в сложных таблицах и астрологических символах. Визуализация делает информацию доступной и понятной.
+            </p>
+            <p>
+                Наш подход включает анализ ключевых аспектов личности: положение Солнца, Луны, Асцендента, а также кармические узлы Раху и Кету. 
+                Особое внимание уделяется прогностике. <strong>Гороскоп на 2026 год</strong> уже встроен в структуру сайта, позволяя вам заранее подготовиться к транзитам Сатурна и Юпитера.
+                Это не просто разбор, это навигатор по вашей судьбе, который всегда под рукой в вашем телефоне.
+            </p>
+        </section>
+        
+        <div class="cta-wrapper">
+            <a href="https://t.me/TAE_PZ" class="btn btn-main">Написать ТАЕНу</a>
+            <a href="#" class="btn btn-sec">Перейти в Канал</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 TAEN Project. All rights reserved.</p>
+        <p style="opacity: 0.5;">Digital Astrology & Web Design</p>
+    </footer>
+
+</body>
+</html>
