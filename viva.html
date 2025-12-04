@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VICTORIA | ZEN DESTINY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ink: #2b2b2b;
+            --paper: #f0f0f0; /* Более теплый оттенок бумаги */
+            --paper-texture: url('https://www.transparenttextures.com/patterns/rice-paper.png');
+            --red: #b91c1c; /* Печать */
+            --red-light: #fecaca;
+            --gold: #d4af37;
+            --sakura: #fce7f3;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Noto Serif JP', serif;
+            overflow: hidden; /* Скролл только внутри блоков */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: var(--paper-texture);
+        }
+
+        /* --- ФОН (САКУРА) --- */
+        #sakura-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.4; pointer-events: none;
+        }
+
+        /* --- ЭКРАНЫ (PAGES) --- */
+        .page-section {
+            display: none; /* Скрыты по умолчанию */
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto; /* Скролл внутри страницы */
+            padding-bottom: 100px; /* Отступ под меню */
+            animation: fadeIn 0.5s ease-out;
+        }
+        .page-section.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ТИПОГРАФИКА ОТЧЕТА --- */
+        .content-block {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid #e5e5e5;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--red);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .report-h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--ink); letter-spacing: -0.02em; }
+        .report-subtitle { font-family: 'Montserrat', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.2em; color: #666; margin-bottom: 2rem; }
+        
+        .report-h2 { 
+            font-size: 1.4rem; font-weight: 700; color: var(--red); 
+            margin-top: 2rem; margin-bottom: 1rem; 
+            display: flex; align-items: center; gap: 10px;
+        }
+        .report-h2::before { content: '◈'; color: var(--gold); font-size: 1rem; }
+
+        .report-text { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 1.25rem; line-height: 1.6; color: #333; margin-bottom: 1rem; text-align: justify; 
+        }
+        
+        .highlight { background: linear-gradient(120deg, var(--sakura) 0%, rgba(255,255,255,0) 100%); padding: 0 5px; font-weight: 600; }
+
+        /* Списки */
+        .report-list { list-style: none; padding: 0; margin-bottom: 1.5rem; }
+        .report-list li { 
+            position: relative; padding-left: 1.5rem; margin-bottom: 0.8rem; 
+            font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: #444;
+        }
+        .report-list li::before { 
+            content: '—'; position: absolute; left: 0; color: var(--red); font-weight: bold; 
+        }
+
+        /* --- ЭКРАН ПАРОЛЯ --- */
+        #screen-lock {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--paper); background-image: var(--paper-texture);
+            z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: transform 0.8s ease-in-out;
+        }
+        .input-code {
+            background: transparent; border: none; border-bottom: 2px solid var(--ink);
+            font-size: 2.5rem; text-align: center; letter-spacing: 15px; width: 260px;
+            outline: none; font-family: 'Montserrat', monospace; color: var(--red);
+        }
+
+        /* --- НАВИГАЦИЯ (DOCK) --- */
+        .nav-dock {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex; gap: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            z-index: 50;
+            transition: transform 0.5s ease;
+        }
+        .nav-dock.hidden { transform: translate(-50%, 150%); }
+
+        .nav-item {
+            display: flex; flex-direction: column; items-center; justify-content: center;
+            color: #999; cursor: pointer; transition: 0.3s; width: 40px; text-align: center;
+        }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 2px; transition: 0.3s; }
+        .nav-item span { font-size: 0.6rem; font-family: 'Montserrat', sans-serif; font-weight: 500; opacity: 0; transition: 0.3s; height: 0; }
+        
+        .nav-item.active { color: var(--red); }
+        .nav-item.active i { transform: translateY(-2px); }
+        .nav-item.active span { opacity: 1; height: auto; }
+        .nav-item:hover { color: var(--ink); }
+
+        /* --- КАРТА ПЛАНЕТ (SVG) --- */
+        .chart-svg { animation: spin 180s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="sakura-canvas"></canvas>
+
+    <div id="screen-lock">
+        <div class="mb-12 text-center">
+            <div class="w-24 h-24 border-2 border-red-800 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl bg-white">
+                <span class="text-4xl text-red-800 font-serif">運</span>
+            </div>
+            <h2 class="text-xl tracking-[0.4em] uppercase text-gray-500 font-serif">Destiny Access</h2>
+        </div>
+        
+        <input type="password" id="pass-input" class="input-code" placeholder="••••••" maxlength="6">
+        <p id="error-msg" class="text-red-600 text-xs mt-6 opacity-0 transition font-bold tracking-widest">ACCESS DENIED</p>
+        
+        <button onclick="checkPass()" class="mt-10 px-12 py-3 border border-ink hover:bg-ink hover:text-white transition uppercase tracking-widest text-xs font-bold duration-500">
+            Войти в систему
+        </button>
+    </div>
+
+    <div id="app" class="relative z-10 w-full max-w-4xl mx-auto h-full hidden">
+
+        <div id="page-home" class="page-section active p-6">
+            <header class="text-center mt-8 mb-10">
+                <h1 class="report-h1">VICTORIA</h1>
+                <p class="report-subtitle">11.02.1992 • OMSK • 07:10</p>
+                <div class="w-16 h-1 bg-red-700 mx-auto mt-4"></div>
+            </header>
+
+            <div class="relative w-[320px] h-[320px] mx-auto mb-10 flex items-center justify-center">
+                <svg viewBox="0 0 200 200" class="w-full h-full absolute top-0 left-0">
+                    <circle cx="100" cy="100" r="98" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/>
+                    <circle cx="100" cy="100" r="85" stroke="#b91c1c" stroke-width="0.5" fill="none" opacity="0.2"/>
+                    <line x1="100" y1="20" x2="160" y2="160" stroke="#d4af37" stroke-width="0.5" opacity="0.6"/>
+                    <line x1="40" y1="140" x2="160" y2="160" stroke="#d4af37" stroke-width="0.5" opacity="0.6"/>
+                    <line x1="100" y1="20" x2="40" y2="140" stroke="#d4af37" stroke-width="0.5" opacity="0.6"/>
+                </svg>
+                
+                <div class="w-full h-full absolute top-0 left-0 chart-svg">
+                    <div class="absolute top-[10%] left-[65%] text-red-700 text-xl transform -rotate-45 bg-white rounded-full px-1">☉</div>
+                    <div class="absolute bottom-[20%] left-[20%] text-ink text-xl bg-white rounded-full px-1">☾</div>
+                    <div class="absolute top-[15%] left-[80%] text-ink text-sm bg-white rounded-full px-1">♂</div>
+                    <div class="absolute top-[25%] left-[85%] text-ink text-sm bg-white rounded-full px-1">♀</div>
+                </div>
+
+                <div class="absolute bg-white p-4 rounded-full border border-gray-200 shadow-lg text-center z-10">
+                    <div class="text-2xl">♒</div>
+                    <div class="text-[10px] uppercase tracking-widest mt-1">Sun</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 text-center border border-gray-100 shadow-sm">
+                    <div class="text-red-700 text-2xl mb-1">♒</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">Солнце</div>
+                    <div class="font-serif text-lg">Водолей</div>
+                </div>
+                <div class="bg-white p-4 text-center border border-gray-100 shadow-sm">
+                    <div class="text-ink text-2xl mb-1">♉</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">Луна</div>
+                    <div class="font-serif text-lg">Телец</div>
+                </div>
+                <div class="bg-white p-4 text-center border border-gray-100 shadow-sm">
+                    <div class="text-ink text-2xl mb-1">♒</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">ASC</div>
+                    <div class="font-serif text-lg">Водолей</div>
+                </div>
+                <div class="bg-white p-4 text-center border border-gray-100 shadow-sm">
+                    <div class="text-ink text-2xl mb-1">♑</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">Марс</div>
+                    <div class="font-serif text-lg">Козерог</div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center text-gray-400 text-sm font-serif italic">
+                "Коснитесь иконки внизу, чтобы открыть главу книги..."
+            </div>
+        </div>
+
+        <div id="page-identity" class="page-section p-6">
+            <h1 class="report-h1 mt-6">ЯДРО ЛИЧНОСТИ</h1>
+            <p class="report-subtitle">КТО ВЫ ЕСТЬ НА САМОМ ДЕЛЕ</p>
+
+            <div class="content-block">
+                <h2 class="report-h2">Солнце в Водолее ♒</h2>
+                <p class="report-text">Виктория, вы пришли в этот мир, чтобы <span class="highlight">обновлять правила</span>. Водолей — знак свободы, интеллекта и будущего. Вы видите мир не таким, какой он есть, а таким, каким он может стать.</p>
+                <p class="report-text">Ваша суперсила — это дружелюбие, смешанное с независимостью. Вы можете общаться с кем угодно, от дворника до министра, но при этом никто не может сказать, что полностью "владеет" вами.</p>
+            </div>
+
+            <div class="content-block" style="border-left-color: var(--ink);">
+                <h2 class="report-h2" style="color: var(--ink);">Луна в Тельце ♉</h2>
+                <p class="report-text">Это положение называется <span class="highlight">ЭКЗАЛЬТАЦИЯ</span>. Луна здесь чувствует себя лучше всего. Если внешне (по Солнцу) вы кажетесь легкой и воздушной, то внутри у вас — железобетонный фундамент.</p>
+                <p class="report-text">Вам жизненно необходим комфорт. Вкусная еда, мягкие ткани, красивая мебель, деньги на счету — это не каприз, это ваша батарейка. Вы — идеальная хозяйка и хранительница, но только если на вас не давить.</p>
+            </div>
+
+            <div class="content-block" style="border-left-color: var(--gold);">
+                <h2 class="report-h2" style="color: var(--gold);">Асцендент в Водолее ♒</h2>
+                <p class="report-text">Ваша социальная маска совпадает с вашим внутренним Я. Люди видят вас как человека оригинального, "не от мира сего", возможно, со странностями в стиле или поведении, которые притягивают.</p>
+            </div>
+        </div>
+
+        <div id="page-wealth" class="page-section p-6">
+            <h1 class="report-h1 mt-6">ФИНАНСЫ</h1>
+            <p class="report-subtitle">СТРАТЕГИЯ ВАШЕГО БОГАТСТВА</p>
+
+            <div class="content-block" style="border-left-color: #15803d;">
+                <h2 class="report-h2" style="color: #15803d;">Код Миллионера</h2>
+                <p class="report-text">У вас очень мощная земная энергия в карте. Луна в Тельце (накопление) + Марс в Козероге (структура). Это классический аспект богатства.</p>
+                <p class="report-text">Деньги к вам приходят не через случайную удачу или хайп, а через <span class="highlight">систему и профессионализм</span>. Вы способны играть в долгую.</p>
+                
+                <h2 class="report-h2" style="color: #15803d; font-size: 1.2rem; margin-top: 1rem;">💰 Лучшие ниши:</h2>
+                <ul class="report-list">
+                    <li><strong>IT и Технологии:</strong> Влияние Водолея.</li>
+                    <li><strong>Дизайн и Красота:</strong> Влияние Тельца (вкус, формы, эстетика).</li>
+                    <li><strong>Недвижимость:</strong> Способность чувствовать материю и накапливать.</li>
+                    <li><strong>Госструктуры:</strong> Марс в Козероге любит иерархию.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="page-love" class="page-section p-6">
+            <h1 class="report-h1 mt-6">ЛЮБОВЬ</h1>
+            <p class="report-subtitle">ВЕНЕРА И МАРС</p>
+
+            <div class="content-block" style="border-left-color: #be185d;">
+                <h2 class="report-h2" style="color: #be185d;">Венера в Козероге ♑</h2>
+                <p class="report-text">В любви вы — <span class="highlight">КОРОЛЕВА СНЕЖНАЯ</span>. Вам не нужны драмы, истерики и "мексиканские страсти". Вам нужен партнер, которого можно уважать.</p>
+                <p class="report-text">Вы цените в мужчинах статус, амбиции, сдержанность и верность. Любовь для вас — это контракт на всю жизнь. Вы долго присматриваетесь, но если выбираете — то навсегда.</p>
+            </div>
+        </div>
+
+        <div id="page-future" class="page-section p-6">
+            <h1 class="report-h1 mt-6">2026: ГОД УДАЧИ</h1>
+            <p class="report-subtitle">ПЕРСОНАЛЬНЫЙ ТРАНЗИТ</p>
+
+            <div class="content-block" style="border-left-color: #7e22ce; background: #faf5ff;">
+                <h2 class="report-h2" style="color: #7e22ce;">Трин Урана к Солнцу</h2>
+                <p class="report-text">Виктория, для вас 2026 год будет <span class="highlight">ГАРМОНИЧНЫМ</span>. В отличие от многих других знаков, которых будет "штормить", вы поймаете попутный ветер.</p>
+                <p class="report-text">Уран (ваша планета-управитель) заходит в Близнецы и делает шикарный аспект (Трин) к вашему Солнцу. Это аспект "Внезапной Удачи".</p>
+                
+                <ul class="report-list">
+                    <li><strong>Весна:</strong> Новые знакомства, которые перевернут жизнь. Возможно, обучение или поездка за границу.</li>
+                    <li><strong>Лето:</strong> Идея нового бизнеса или хобби, которое быстро монетизируется.</li>
+                    <li><strong>Осень:</strong> Время для любви. Легкость в отношениях.</li>
+                </ul>
+                <p class="report-text font-bold text-center mt-4 text-purple-900">СОВЕТ: ГОВОРИТЕ "ДА" ЛЮБЫМ ПРЕДЛОЖЕНИЯМ.</p>
+            </div>
+        </div>
+
+        <div id="page-magic" class="page-section p-6">
+            <h1 class="report-h1 mt-6">АРТЕФАКТЫ</h1>
+            <p class="report-subtitle">ВАШИ КАМНИ И ЦВЕТА</p>
+
+            <div class="content-block" style="border-left-color: var(--gold);">
+                <h2 class="report-h2" style="color: var(--gold);">💎 Камни Силы</h2>
+                <ul class="report-list">
+                    <li><strong>Аметист:</strong> Для ясности ума и защиты от стресса (Водолей).</li>
+                    <li><strong>Изумруд:</strong> Для привлечения денег и стабильности (Телец).</li>
+                    <li><strong>Гранат:</strong> Для энергии и достижения целей (Козерог).</li>
+                </ul>
+
+                <h2 class="report-h2" style="color: var(--gold);">🎨 Цвета Удачи</h2>
+                <div class="flex gap-4 mt-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-cyan-400 shadow-md"></div>
+                    <div class="w-12 h-12 rounded-full bg-green-700 shadow-md"></div>
+                    <div class="w-12 h-12 rounded-full bg-slate-900 shadow-md"></div>
+                </div>
+                <p class="report-text">Электрик (синий), Глубокий Зеленый (земной), Строгий Черный.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="nav-dock" class="nav-dock hidden">
+        <div class="nav-item active" onclick="switchPage('home', this)">
+            <i class="fas fa-home"></i>
+            <span>ГЛАВНАЯ</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('identity', this)">
+            <i class="fas fa-fingerprint"></i>
+            <span>ЯДРО</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('wealth', this)">
+            <i class="fas fa-coins"></i>
+            <span>ДЕНЬГИ</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('love', this)">
+            <i class="fas fa-heart"></i>
+            <span>ЛЮБОВЬ</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('future', this)">
+            <i class="fas fa-eye"></i>
+            <span>2026</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('magic', this)">
+            <i class="fas fa-gem"></i>
+            <span>МАГИЯ</span>
+        </div>
+    </div>
+
+    <script>
+        // --- ЛОГИКА ПАРОЛЯ ---
+        const CORRECT_PASS = "098765";
+
+        function checkPass() {
+            const input = document.getElementById('pass-input');
+            const error = document.getElementById('error-msg');
+            const lockScreen = document.getElementById('screen-lock');
+            const app = document.getElementById('app');
+            const nav = document.getElementById('nav-dock');
+
+            if (input.value === CORRECT_PASS) {
+                // Анимация открытия
+                lockScreen.style.transform = "translateY(-100%)";
+                setTimeout(() => {
+                    lockScreen.style.display = "none";
+                    app.classList.remove('hidden');
+                    nav.classList.remove('hidden');
+                }, 800);
+            } else {
+                // Ошибка
+                error.style.opacity = "1";
+                input.classList.add('animate-pulse');
+                setTimeout(() => input.classList.remove('animate-pulse'), 300);
+                input.value = "";
+            }
+        }
+
+        // --- ЛОГИКА НАВИГАЦИИ (SPA) ---
+        function switchPage(pageId, btn) {
+            // 1. Скрываем все страницы
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            // 2. Показываем нужную
+            document.getElementById('page-' + pageId).classList.add('active');
+            // 3. Обновляем кнопки
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            btn.classList.add('active');
+            // 4. Скролл вверх
+            window.scrollTo(0,0);
+        }
+
+        // --- АНИМАЦИЯ САКУРЫ ---
+        const canvas = document.getElementById('sakura-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const petals = Array(40).fill().map(() => ({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*5+5, d:Math.random()*2+1}));
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#fbcfe8';
+            petals.forEach(p => {
+                p.y += p.d; p.x += Math.sin(p.y/50);
+                if(p.y > canvas.height) p.y = -10;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
