@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
         /* --- CSS СТИЛИ --- */
@@ -15,6 +15,7 @@
             --accent-color: #D4A59A;
             --accent-hover: #bfa098;
             --error-color: #ffcccc;
+            --details-bg: #fdfbf7;
         }
 
         body {
@@ -23,16 +24,15 @@
             font-family: 'Lato', sans-serif;
             background-color: var(--bg-color);
             background-image: radial-gradient(#e8e0d5 1px, transparent 1px);
-            background-size: 20px 20px; /* Легкий горошек на фоне */
+            background-size: 20px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             color: var(--text-main);
-            overflow: hidden;
+            overflow-y: auto; /* Разрешаем скролл, если контента много */
         }
 
-        /* Контейнер-карточка (как пригласительный) */
         .card {
             background: var(--card-bg);
             width: 90%;
@@ -42,20 +42,20 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             text-align: center;
             position: relative;
-            transition: height 0.3s ease;
+            margin: 20px 0; /* Отступ чтобы карточка не прилипала к краям на маленьких экранах */
         }
 
         h1, h2 {
             font-family: 'Playfair Display', serif;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--text-main);
         }
 
         p {
             font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             color: #666;
         }
 
@@ -73,6 +73,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Lato', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
@@ -127,10 +128,53 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Декор для финала */
         .flowers {
             font-size: 40px;
             margin-bottom: 10px;
+        }
+
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ФИНАЛЬНОЙ КАРТОЧКИ --- */
+        .details-box {
+            background-color: var(--details-bg);
+            border: 1px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 25px 15px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--text-main);
+            margin: 0;
+        }
+        
+        .detail-note {
+            font-size: 14px;
+            font-style: italic;
+            color: #888;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -156,20 +200,36 @@
             <h1>Мы женимся!</h1>
             <p>Ты прошел проверку! Мы будем счастливы видеть тебя на нашей свадьбе.</p>
             
-            <div style="background: #fafafa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                <p style="margin: 0; font-weight: bold;">25 Июля 2025</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px;">Ресторан "Облака", 16:00</p>
-            </div>
+            <div class="details-box">
+                <div class="detail-item">
+                    <div class="detail-label">Когда</div>
+                    <p class="detail-value">25 Июля 2025</p>
+                    <p class="detail-note">Сбор гостей в 16:00</p>
+                </div>
 
-            <button class="btn primary" onclick="alert('Спасибо! Мы записали, что вы будете!')">Я приду!</button>
-            <button class="btn" onclick="location.reload()">Пройти еще раз</button>
+                <div class="detail-item">
+                    <div class="detail-label">Где</div>
+                    <p class="detail-value">Ресторан "Облака"</p>
+                    <p class="detail-note">ул. Примерная, д. 15</p>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Дресс-код</div>
+                    <p class="detail-value">Cocktail</p>
+                    <p class="detail-note">Будем благодарны за пастельные тона</p>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Важно</div>
+                    <p class="detail-value">Берите с собой хорошее настроение!</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         /* --- JAVASCRIPT ЛОГИКА --- */
         
-        // Данные вопросов. isCorrect: true - правильный ответ
         const questions = [
             {
                 text: "Где Антон сделал Ане предложение?",
@@ -199,27 +259,24 @@
 
         let currentQuestionIndex = 0;
 
-        // Переключение экранов
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // Старт игры
         function startGame() {
             currentQuestionIndex = 0;
             showQuestion();
             showScreen('screen-quiz');
         }
 
-        // Отображение текущего вопроса
         function showQuestion() {
             const q = questions[currentQuestionIndex];
             document.getElementById('question-text').innerText = q.text;
             document.getElementById('q-number').innerText = currentQuestionIndex + 1;
             
             const container = document.getElementById('answers-container');
-            container.innerHTML = ''; // Очистить старые кнопки
+            container.innerHTML = '';
 
             q.answers.forEach(answer => {
                 const btn = document.createElement('button');
@@ -230,11 +287,9 @@
             });
         }
 
-        // Проверка ответа
         function checkAnswer(btn, isCorrect) {
             if (isCorrect) {
-                // Если правильно
-                btn.style.background = '#9CAF88'; // Зеленоватый (Sage)
+                btn.style.background = '#9CAF88'; 
                 btn.style.color = 'white';
                 btn.style.borderColor = '#9CAF88';
                 
@@ -242,7 +297,6 @@
                     nextQuestion();
                 }, 500);
             } else {
-                // Если неправильно
                 btn.classList.add('shake');
                 setTimeout(() => {
                     btn.classList.remove('shake');
@@ -250,14 +304,13 @@
             }
         }
 
-        // Следующий вопрос или финал
         function nextQuestion() {
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 showQuestion();
             } else {
                 showScreen('screen-final');
-                fireConfetti(); // Тут можно добавить запуск конфетти
+                // Сюда можно добавить запуск конфетти, если захочется
             }
         }
     </script>
