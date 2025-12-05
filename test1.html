@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS СТИЛИ --- */
+        :root {
+            --bg-color: #F9F7F2;
+            --card-bg: #FFFFFF;
+            --text-main: #4A4A4A;
+            --accent-color: #D4A59A;
+            --accent-hover: #bfa098;
+            --error-color: #ffcccc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#e8e0d5 1px, transparent 1px);
+            background-size: 20px 20px; /* Легкий горошек на фоне */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* Контейнер-карточка (как пригласительный) */
+        .card {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            position: relative;
+            transition: height 0.3s ease;
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        /* Стили кнопок */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-color);
+            background: transparent;
+            color: var(--text-main);
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn.primary {
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 5px 15px rgba(212, 165, 154, 0.4);
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 165, 154, 0.6);
+        }
+
+        /* Анимация ошибки */
+        .shake {
+            animation: shake 0.5s;
+            background-color: var(--error-color) !important;
+            border-color: red !important;
+            color: red !important;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* Управление экранами */
+        .screen {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Декор для финала */
+        .flowers {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="screen-intro" class="screen active">
+            <div class="flowers">🌿</div>
+            <h1>Save the Date</h1>
+            <p>Мы приготовили особенное приглашение.<br>Но сначала проверим, насколько хорошо вы нас знаете!</p>
+            <button class="btn primary" onclick="startGame()">Начать квиз</button>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #D4A59A;">Вопрос <span id="q-number">1</span> из 3</p>
+            <h2 id="question-text">Текст вопроса</h2>
+            <div id="answers-container">
+                </div>
+        </div>
+
+        <div id="screen-final" class="screen">
+            <div class="flowers">💍</div>
+            <h1>Мы женимся!</h1>
+            <p>Ты прошел проверку! Мы будем счастливы видеть тебя на нашей свадьбе.</p>
+            
+            <div style="background: #fafafa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <p style="margin: 0; font-weight: bold;">25 Июля 2025</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px;">Ресторан "Облака", 16:00</p>
+            </div>
+
+            <button class="btn primary" onclick="alert('Спасибо! Мы записали, что вы будете!')">Я приду!</button>
+            <button class="btn" onclick="location.reload()">Пройти еще раз</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- JAVASCRIPT ЛОГИКА --- */
+        
+        // Данные вопросов. isCorrect: true - правильный ответ
+        const questions = [
+            {
+                text: "Где Антон сделал Ане предложение?",
+                answers: [
+                    { text: "В Париже", isCorrect: false },
+                    { text: "На кухне", isCorrect: false },
+                    { text: "На берегу моря", isCorrect: true }
+                ]
+            },
+            {
+                text: "Кто из нас главный паникер?",
+                answers: [
+                    { text: "Антон", isCorrect: false },
+                    { text: "Аня", isCorrect: true },
+                    { text: "Наш кот", isCorrect: false }
+                ]
+            },
+            {
+                text: "Какую дату нужно освободить?",
+                answers: [
+                    { text: "25 Июля 2025", isCorrect: true },
+                    { text: "Завтра", isCorrect: false },
+                    { text: "Никогда", isCorrect: false }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        // Переключение экранов
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // Старт игры
+        function startGame() {
+            currentQuestionIndex = 0;
+            showQuestion();
+            showScreen('screen-quiz');
+        }
+
+        // Отображение текущего вопроса
+        function showQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-text').innerText = q.text;
+            document.getElementById('q-number').innerText = currentQuestionIndex + 1;
+            
+            const container = document.getElementById('answers-container');
+            container.innerHTML = ''; // Очистить старые кнопки
+
+            q.answers.forEach(answer => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.innerText = answer.text;
+                btn.onclick = () => checkAnswer(btn, answer.isCorrect);
+                container.appendChild(btn);
+            });
+        }
+
+        // Проверка ответа
+        function checkAnswer(btn, isCorrect) {
+            if (isCorrect) {
+                // Если правильно
+                btn.style.background = '#9CAF88'; // Зеленоватый (Sage)
+                btn.style.color = 'white';
+                btn.style.borderColor = '#9CAF88';
+                
+                setTimeout(() => {
+                    nextQuestion();
+                }, 500);
+            } else {
+                // Если неправильно
+                btn.classList.add('shake');
+                setTimeout(() => {
+                    btn.classList.remove('shake');
+                }, 500);
+            }
+        }
+
+        // Следующий вопрос или финал
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScreen('screen-final');
+                fireConfetti(); // Тут можно добавить запуск конфетти
+            }
+        }
+    </script>
+</body>
+</html>
