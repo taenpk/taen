@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SNAKE ESCAPE 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        body {
+            background-color: #050505;
+            color: #0f0;
+            font-family: 'Press Start 2P', monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- CANVAS WRAPPER --- */
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 600px;
+            background: #111;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #game-container::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- UI OVERLAYS --- */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: none !important;
+        }
+
+        h1 {
+            color: #00ff41;
+            font-size: 20px;
+            line-height: 1.5;
+            text-shadow: 2px 2px #ff00de;
+            margin-bottom: 20px;
+        }
+
+        p.desc {
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 90%;
+        }
+        
+        /* Стили для комментария при проигрыше */
+        #result-comment {
+            font-family: 'Roboto', sans-serif;
+            font-style: italic;
+            color: #ccc;
+            margin-bottom: 25px;
+            font-size: 13px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .highlight { color: #ff00de; font-weight: bold; }
+        .gold { color: #ffd700; font-weight: bold; }
+
+        .btn {
+            background: #ff00de;
+            color: #fff;
+            border: 4px solid #fff;
+            padding: 12px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px #00ff41;
+            transition: transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #00ff41;
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 5;
+            color: #fff;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /* --- IN-GAME NOTIFICATION --- */
+        #gift-indicator {
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            text-align: center;
+            color: #ff00de;
+            font-size: 14px;
+            text-shadow: 0 0 10px #ff00de;
+            animation: blink 1s infinite;
+            z-index: 5;
+            display: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* --- SHOP STYLES --- */
+        .shop-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .shop-card {
+            background: #222;
+            border: 2px solid #444;
+            padding: 15px;
+            width: 45%;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .shop-card.unlocked {
+            border-color: #00ff41;
+            background: #002200;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        .shop-price {
+            font-size: 10px;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .shop-title {
+            font-size: 10px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .lock-icon { font-size: 24px; margin-bottom: 5px; }
+        
+        .prize-content {
+            display: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .prize-link {
+            color: #ff00de;
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 1px dashed #ff00de;
+        }
+
+        /* --- CONGRATS SCREEN (Prize 1) --- */
+        .congrats-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #fff;
+            background: rgba(0, 50, 0, 0.6);
+            padding: 20px;
+            border: 1px solid #00ff41;
+            box-shadow: 0 0 15px #00ff41;
+        }
+
+        /* --- VICTORY SCREEN --- */
+        .victory-box {
+            border: 3px solid #ffd700;
+            padding: 20px;
+            background: rgba(50, 40, 0, 0.8);
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px #ffd700;
+        }
+
+        .promo-code {
+            font-size: 18px;
+            color: #000;
+            background: #ffd700;
+            padding: 10px;
+            margin: 15px 0;
+            display: inline-block;
+            font-weight: bold;
+            font-family: 'Roboto', sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="score-display">СЧЕТ: <span id="score">0</span></div>
+    <div id="gift-indicator">🎁 ПОДАРОК ДОСТУПЕН!</div>
+    
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="ui-layer">
+        <h1>SNAKE 2026:<br>ESCAPE REALITY</h1>
+        <p class="desc">
+            Твоя задача: <span class="highlight">дотащить Змею до конца года!</span> 🐍<br><br>
+            2025-й пытается тебя удержать, но ты не сдавайся.<br><br>
+            Уворачивайся от проблем, собирай <span class="highlight">ВИНИШКО</span> 🍷 и <span class="highlight">БИТКОИНЫ</span> 📀.
+        </p>
+        <button class="btn" onclick="startGame()">ПОГНАЛИ!</button>
+    </div>
+
+    <!-- GAME OVER / SHOP SCREEN -->
+    <div id="game-over-screen" class="ui-layer hidden">
+        <h1 id="result-title">ПОТРАЧЕНО</h1>
+        <p id="result-comment">Загрузка оскорбления...</p> <!-- Сюда вернется юмор -->
+        
+        <p id="result-score" style="margin-bottom: 15px; color: #ffd700; font-size: 12px;">ДОСТУПНО ОЧКОВ: 0</p>
+        
+        <div class="shop-container">
+            <!-- ITEM 1: 70 POINTS -->
+            <div class="shop-card" id="card-70">
+                <div class="shop-price">ЦЕНА: 70</div>
+                <div class="shop-title">Мотивация на 2026</div>
+                <div class="lock-icon" id="icon-70">🔒</div>
+                <button class="btn" style="font-size:10px; padding:5px;" id="btn-70" onclick="buyItem(70)">ОТКРЫТЬ</button>
+            </div>
+
+            <!-- ITEM 2: 150 POINTS -->
+            <div class="shop-card" id="card-150">
+                <div class="shop-price">ЦЕНА: 150</div>
+                <div class="shop-title">ВИДЕО-ПОЗДРАВЛЕНИЕ</div>
+                <div class="lock-icon" id="icon-150">🔒</div>
+                <button class="btn" style="font-size:10px; padding:5px;" id="btn-150" onclick="buyItem(150)">КУПИТЬ</button>
+                <div class="prize-content" id="content-150">
+                    <a href="YOUR_VIDEO_LINK_HERE" target="_blank" class="prize-link">👉 СМОТРЕТЬ ВИДЕО 👈</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="resetGame()">ЕЩЕ РАЗ</button>
+    </div>
+
+    <!-- PRIZE SCREEN (70 POINTS) -->
+    <div id="prize-screen-70" class="ui-layer hidden">
+        <h1 style="color: #00ff41;">ТЫ СПРАВИЛСЯ!</h1>
+        <div class="congrats-text">
+            Слушай, если ты смог набрать 70 очков в этом безумии, то и 2026 год тебе по плечу! 💪<br><br>
+            Змея шепнула, что тебя ждет удача, рост доходов и минимум дедлайнов.<br><br>
+            Всё будет супер. Мы проверяли! 🎄
+        </div>
+        <button class="btn" onclick="backToShop()">НАЗАД К ИГРЕ</button>
+    </div>
+
+    <!-- VICTORY SCREEN (3 MINS) -->
+    <div id="victory-screen" class="ui-layer hidden">
+        <h1 style="color: #ffd700;">ЛЕГЕНДА! 👑</h1>
+        <div class="victory-box">
+            <p class="desc" style="color: #fff;">
+                Ты продержался 3 минуты в этом безумии. Ты готов ко всему.
+            </p>
+            <p style="font-size: 12px; margin-bottom: 5px;">Твой секретный код:</p>
+            <div class="promo-code">СКИДОН2026</div>
+            <p style="font-size: 10px; margin-top: 10px;">Скидка 50% на заказ!</p>
+            <br>
+            <a href="YOUR_CONTACT_LINK_HERE" class="btn" style="text-decoration:none; display:inline-block; font-size: 12px;">СВЯЗАТЬСЯ С НАМИ</a>
+        </div>
+        <button class="btn" onclick="resetGame()">В МЕНЮ</button>
+    </div>
+</div>
+
+<script>
+    // --- CONFIG ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Game State
+    let isPlaying = false;
+    let frames = 0;
+    let score = 0;
+    let speed = 2.5; 
+    let gameStartTime = 0;
+    const GAME_DURATION_SEC = 180; // 3 минуты
+    
+    // Assets
+    const PLAYER_SPRITE = '🐍';
+    // Обновленный список препятствий
+    const OBSTACLES = [
+        { text: 'ДЕДЛАЙН', color: '#ff3333' },
+        { text: 'ИПОТЕКА', color: '#ff3333' },
+        { text: 'БЫВШИЕ', color: '#aa33ff' },
+        { text: 'ОТЧЕТ', color: '#aaaaaa' },
+        { text: 'ЦЕНЫ', color: '#ff8800' },
+        { text: 'ПОХМЕЛЬЕ', color: '#00ffaa' },
+        { text: 'ЖКХ', color: '#ff5500' },
+        { text: 'НАЛОГИ', color: '#cccccc' },
+        { text: 'ДИЕТА', color: '#00ccff' },
+        { text: 'РЕМОНТ', color: '#aaaaaa' },
+        { text: 'ЛЕНЬ', color: '#666666' },
+        { text: 'ПРОБКИ', color: '#ff3333' },
+        { text: 'СОСЕДИ', color: '#aa33ff' }
+    ];
+    const BONUSES = [
+        { text: '🍷', type: 'wine', val: 5 },
+        { text: '📀', type: 'btc', val: 10 },
+        { text: '🐎', type: 'horse', val: 50 } 
+    ];
+
+    // Objects
+    let player = {
+        x: 50,
+        y: 150,
+        radius: 20,
+        velocity: 0,
+        gravity: 0.20,
+        jump: 4.2
+    };
+
+    let pipes = []; 
+    let coins = []; 
+
+    // Resize
+    function resize() {
+        canvas.width = document.getElementById('game-container').offsetWidth;
+        canvas.height = document.getElementById('game-container').offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // --- INPUT ---
+    function jump() {
+        if (!isPlaying) return;
+        player.velocity = -player.jump;
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') jump();
+    });
+    
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
+    canvas.addEventListener('mousedown', (e) => { e.preventDefault(); jump(); });
+
+    // --- LOGIC ---
+    function startGame() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-over-screen').classList.add('hidden');
+        document.getElementById('victory-screen').classList.add('hidden');
+        document.getElementById('prize-screen-70').classList.add('hidden');
+        document.getElementById('gift-indicator').style.display = 'none';
+        
+        // Reset
+        player.y = canvas.height / 2;
+        player.velocity = 0;
+        pipes = [];
+        coins = [];
+        score = 0;
+        frames = 0;
+        speed = 2.5; 
+        gameStartTime = Date.now();
+        isPlaying = true;
+        
+        document.getElementById('score').innerText = score;
+        loop();
+    }
+
+    function loop() {
+        if (!isPlaying) return;
+
+        // Check Time Limit
+        let elapsedSec = (Date.now() - gameStartTime) / 1000;
+        if (elapsedSec >= GAME_DURATION_SEC) {
+            victory();
+            return;
+        }
+
+        update();
+        draw();
+        
+        frames++;
+        requestAnimationFrame(loop);
+    }
+
+    function update() {
+        if (score >= 150) {
+            document.getElementById('gift-indicator').style.display = 'block';
+        }
+
+        player.velocity += player.gravity;
+        player.y += player.velocity;
+
+        if (player.y + player.radius >= canvas.height || player.y - player.radius <= 0) {
+            gameOver();
+        }
+
+        if (frames % 150 === 0) {
+            let gapHeight = 210;
+            let minPipeHeight = 50;
+            let maxPipeHeight = canvas.height - gapHeight - minPipeHeight;
+            if (maxPipeHeight < minPipeHeight) maxPipeHeight = minPipeHeight + 10;
+
+            let topPipeHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
+            let content = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+
+            pipes.push({
+                x: canvas.width,
+                y: 0,
+                h: topPipeHeight,
+                w: 60,
+                text: content.text,
+                color: content.color,
+                passed: false,
+                isBottom: false
+            });
+
+            pipes.push({
+                x: canvas.width,
+                y: topPipeHeight + gapHeight,
+                h: canvas.height - (topPipeHeight + gapHeight),
+                w: 60,
+                text: content.text,
+                color: content.color,
+                passed: false,
+                isBottom: true
+            });
+            
+            if (Math.random() > 0.5) {
+                let bonus = BONUSES[Math.floor(Math.random() * BONUSES.length)];
+                coins.push({
+                    x: canvas.width + 30,
+                    y: topPipeHeight + (gapHeight / 2),
+                    text: bonus.text,
+                    val: bonus.val,
+                    collected: false
+                });
+            }
+        }
+
+        for (let i = 0; i < pipes.length; i++) {
+            let p = pipes[i];
+            p.x -= speed;
+
+            let hitboxPadding = 8;
+            if (
+                player.x + player.radius - hitboxPadding > p.x && 
+                player.x - player.radius + hitboxPadding < p.x + p.w && 
+                player.y + player.radius - hitboxPadding > p.y && 
+                player.y - player.radius + hitboxPadding < p.y + p.h
+            ) {
+                gameOver();
+            }
+
+            if (p.x + p.w < player.x && !p.passed && p.isBottom) {
+                score++;
+                speed += 0.03;
+                document.getElementById('score').innerText = score;
+                p.passed = true;
+            }
+        }
+        pipes = pipes.filter(p => p.x + p.w > 0);
+
+        for (let i = 0; i < coins.length; i++) {
+            let c = coins[i];
+            c.x -= speed;
+            let dx = player.x - c.x;
+            let dy = player.y - c.y;
+            let distance = Math.sqrt(dx*dx + dy*dy);
+
+            if (distance < player.radius + 15 && !c.collected) {
+                c.collected = true;
+                score += c.val;
+                document.getElementById('score').innerText = score;
+            }
+        }
+        coins = coins.filter(c => c.x > -50 && !c.collected);
+    }
+
+    function draw() {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = '#330033';
+        ctx.lineWidth = 1;
+        let offset = (frames * speed) % 50;
+        for (let x = -offset; x < canvas.width; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        }
+
+        pipes.forEach(p => {
+            ctx.shadowBlur = 10; ctx.shadowColor = p.color; ctx.strokeStyle = p.color; ctx.lineWidth = 2;
+            ctx.strokeRect(p.x, p.y, p.w, p.h);
+            ctx.fillStyle = 'rgba(0,0,0,0.8)'; ctx.fillRect(p.x, p.y, p.w, p.h);
+            ctx.shadowBlur = 0;
+            
+            ctx.save();
+            ctx.translate(p.x + p.w/2, p.y + p.h/2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#fff'; ctx.font = '12px Roboto'; ctx.textAlign = 'center';
+            if (p.h > 60) ctx.fillText(p.text, 0, 4);
+            ctx.restore();
+        });
+
+        coins.forEach(c => {
+            ctx.font = '30px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(c.text, c.x, c.y);
+        });
+
+        ctx.shadowBlur = 15; ctx.shadowColor = '#00ff41';
+        ctx.font = '40px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        let angle = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (player.velocity * 0.1)));
+        ctx.rotate(angle);
+        ctx.scale(-1, 1); 
+        ctx.fillText(PLAYER_SPRITE, 0, 0);
+        ctx.restore();
+        ctx.shadowBlur = 0;
+    }
+
+    // --- RANDOM MESSAGES ---
+    const phrases = [
+        "Январь тебя сожрал с потрохами.",
+        "Ипотека оказалась сильнее...",
+        "Даже оливье так быстро не портится!",
+        "Ну вот, опять работать весь год...",
+        "Бывшие оказались быстрее!",
+        "Дедлайн наступил неожиданно.",
+        "Не расстраивайся, цены тоже растут.",
+        "Это был сложный год (и уровень)."
+    ];
+
+    function gameOver() {
+        isPlaying = false;
+        const endScreen = document.getElementById('game-over-screen');
+        const finalScoreDisplay = document.getElementById('result-score');
+        const commentDisplay = document.getElementById('result-comment');
+
+        // Выбираем случайную фразу
+        commentDisplay.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+        finalScoreDisplay.innerText = "ДОСТУПНО ОЧКОВ: " + score;
+
+        resetShopItem(70);
+        resetShopItem(150);
+
+        endScreen.classList.remove('hidden');
+    }
+
+    function resetShopItem(price) {
+        const card = document.getElementById('card-' + price);
+        const btn = document.getElementById('btn-' + price);
+        const icon = document.getElementById('icon-' + price);
+        const content = document.getElementById('content-' + price); // Only for 150 now
+
+        card.classList.remove('unlocked');
+        if(content) content.style.display = 'none';
+        icon.innerText = '🔒';
+        icon.style.display = 'block';
+        btn.style.display = 'block';
+        
+        if (score >= price) {
+            btn.disabled = false;
+            btn.innerText = (price === 150) ? "КУПИТЬ" : "ОТКРЫТЬ";
+            btn.style.opacity = "1";
+        } else {
+            btn.disabled = true;
+            btn.innerText = "МАЛО";
+            btn.style.opacity = "0.5";
+        }
+    }
+
+    window.buyItem = function(price) {
+        if (score >= price) {
+            if (price === 70) {
+                // Переход на страницу поздравления
+                document.getElementById('game-over-screen').classList.add('hidden');
+                document.getElementById('prize-screen-70').classList.remove('hidden');
+            } else if (price === 150) {
+                // Открытие ссылки (старая логика для главного приза)
+                const card = document.getElementById('card-' + price);
+                const btn = document.getElementById('btn-' + price);
+                const icon = document.getElementById('icon-' + price);
+                const content = document.getElementById('content-' + price);
+
+                card.classList.add('unlocked');
+                icon.style.display = 'none';
+                btn.style.display = 'none';
+                content.style.display = 'block';
+            }
+        }
+    }
+
+    window.backToShop = function() {
+        document.getElementById('prize-screen-70').classList.add('hidden');
+        document.getElementById('game-over-screen').classList.remove('hidden');
+        
+        // Визуально помечаем, что куплено
+        const card = document.getElementById('card-70');
+        const btn = document.getElementById('btn-70');
+        const icon = document.getElementById('icon-70');
+        
+        card.classList.add('unlocked');
+        icon.style.display = 'none';
+        btn.innerText = "КУПЛЕНО";
+        btn.disabled = true;
+    }
+
+    function victory() {
+        isPlaying = false;
+        document.getElementById('victory-screen').classList.remove('hidden');
+    }
+    
+    function resetGame() {
+        startGame();
+    }
+
+</script>
+</body>
+</html>
