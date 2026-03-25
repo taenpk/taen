@@ -3,258 +3,431 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JCenterS — AI / Hybrid Production Estimate</title>
+  <title>JCenterS — Hybrid Production Estimate</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #0b1020;
-      --bg-soft: #121a30;
-      --card: rgba(255, 255, 255, 0.06);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --text: #f5f7fb;
-      --muted: #b5bfd6;
-      --accent: #8ab4ff;
-      --accent-2: #7ef0c5;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --bg: #06070b;
+      --bg-2: #0b0e14;
+      --panel: rgba(255,255,255,0.04);
+      --panel-2: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.10);
+      --text: #f4f6fb;
+      --muted: #98a2b3;
+      --soft: #c7cfdd;
+      --accent: #7c9cff;
+      --accent-2: #8dffcf;
+      --accent-3: #dca8ff;
+      --shadow: 0 30px 80px rgba(0,0,0,0.45);
+      --radius: 28px;
+      --radius-sm: 20px;
+      --max: 1240px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(138, 180, 255, 0.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(126, 240, 197, 0.12), transparent 24%),
-        linear-gradient(180deg, #08101f 0%, #0f172b 100%);
+      font-family: "Inter", Arial, sans-serif;
       color: var(--text);
-      line-height: 1.6;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(124,156,255,0.18), transparent 22%),
+        radial-gradient(circle at 85% 8%, rgba(141,255,207,0.10), transparent 18%),
+        radial-gradient(circle at 60% 40%, rgba(220,168,255,0.08), transparent 22%),
+        linear-gradient(180deg, #05060a 0%, #090b11 45%, #05060a 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(circle at center, black 48%, transparent 100%);
+      opacity: .35;
     }
 
     .container {
-      width: min(1100px, calc(100% - 40px));
+      width: min(var(--max), calc(100% - 40px));
       margin: 0 auto;
-      padding: 48px 0 80px;
+      padding: 28px 0 80px;
+      position: relative;
+      z-index: 1;
     }
 
-    .hero {
-      padding: 40px;
-      border: 1px solid var(--card-border);
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow);
-      margin-bottom: 28px;
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0 28px;
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 20px rgba(138, 180, 255, 0.55);
-    }
-
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(32px, 5vw, 56px);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-    }
-
-    .subtitle {
-      max-width: 840px;
-      font-size: 18px;
-      color: var(--muted);
-      margin: 0 0 28px;
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .meta-card {
-      padding: 18px 20px;
-      border-radius: 20px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-    }
-
-    .meta-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .meta-value {
-      font-size: 18px;
+      gap: 12px;
       font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--soft);
+      font-size: 13px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 28px;
-      margin-top: 28px;
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:
+        0 0 22px rgba(124,156,255,0.6),
+        0 0 44px rgba(141,255,207,0.18);
     }
 
-    .section {
-      padding: 30px;
-      border-radius: 24px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
+    .topnote {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 36px;
+      padding: 54px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
+        linear-gradient(135deg, rgba(124,156,255,0.10), rgba(141,255,207,0.04));
       box-shadow: var(--shadow);
     }
 
-    h2 {
-      margin: 0 0 18px;
-      font-size: 28px;
-      letter-spacing: -0.02em;
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(60px);
+      opacity: 0.45;
+      pointer-events: none;
     }
 
-    p {
-      margin: 0 0 16px;
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      right: -40px;
+      top: -40px;
+      background: rgba(124,156,255,0.30);
+    }
+
+    .hero::after {
+      width: 220px;
+      height: 220px;
+      left: -30px;
+      bottom: -40px;
+      background: rgba(141,255,207,0.16);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(124,156,255,0.22);
+      background: rgba(124,156,255,0.08);
+      color: #dce6ff;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 6vw, 76px);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      max-width: 920px;
+    }
+
+    .hero-sub {
+      margin: 22px 0 0;
+      max-width: 860px;
+      color: var(--soft);
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      margin-top: 34px;
+    }
+
+    .hero-card,
+    .section,
+    .metric,
+    .estimate-item,
+    .rights-card,
+    .tool-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .meta-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .meta-value {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .section {
+      border-radius: 30px;
+      padding: 34px;
+      margin-top: 24px;
+    }
+
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .section p {
+      margin: 0 0 14px;
+      color: var(--soft);
+      line-height: 1.8;
       font-size: 16px;
     }
 
-    .badge-row {
+    .chips {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 24px;
     }
 
-    .badge {
+    .chip {
       padding: 10px 14px;
       border-radius: 999px;
-      background: rgba(138, 180, 255, 0.12);
-      border: 1px solid rgba(138, 180, 255, 0.2);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
       color: var(--text);
       font-size: 14px;
     }
 
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .metric {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .metric-sub {
+      margin-top: 10px;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
     .estimate-list {
       display: grid;
-      gap: 14px;
-      margin-top: 14px;
+      gap: 18px;
+      margin-top: 20px;
     }
 
     .estimate-item {
+      border-radius: 24px;
+      padding: 24px;
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 16px;
-      padding: 18px 20px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
+      gap: 24px;
+      align-items: start;
     }
 
     .estimate-item h3 {
-      margin: 0 0 6px;
-      font-size: 18px;
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
     }
 
     .estimate-item p {
       margin: 0;
-      font-size: 14px;
+      color: var(--soft);
+      line-height: 1.8;
     }
 
     .price {
-      font-size: 20px;
-      font-weight: 800;
-      white-space: nowrap;
-      align-self: start;
-    }
-
-    .total-card {
-      margin-top: 18px;
-      padding: 22px 24px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(138, 180, 255, 0.16), rgba(126, 240, 197, 0.12));
-      border: 1px solid rgba(138, 180, 255, 0.24);
-    }
-
-    .total-label {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .total-value {
-      font-size: 34px;
+      font-size: 28px;
       font-weight: 900;
-      letter-spacing: -0.03em;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      text-shadow: 0 0 24px rgba(124,156,255,0.18);
     }
 
-    .rights {
+    .rights-grid {
       display: grid;
-      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 18px;
       margin-top: 18px;
     }
 
-    .rights-item {
-      padding: 18px 20px;
-      border-radius: 18px;
-      border: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.04);
+    .rights-card {
+      border-radius: 24px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .rights-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: baseline;
-      margin-bottom: 6px;
+    .rights-card.featured {
+      background:
+        linear-gradient(180deg, rgba(124,156,255,0.12), rgba(255,255,255,0.04));
+    }
+
+    .rights-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      margin-bottom: 12px;
     }
 
     .rights-title {
-      font-weight: 700;
-      font-size: 17px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
     }
 
     .rights-add {
-      font-weight: 800;
       color: var(--accent-2);
-      white-space: nowrap;
+      font-weight: 700;
+      margin-bottom: 14px;
+      font-size: 15px;
     }
 
     .rights-total {
-      font-size: 14px;
-      color: var(--muted);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
     }
 
-    .footer-note {
-      margin-top: 26px;
-      padding: 18px 20px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      color: var(--muted);
+    .rights-desc {
+      color: var(--soft);
       font-size: 14px;
+      line-height: 1.7;
     }
 
-    @media (max-width: 900px) {
-      .grid,
-      .meta {
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .tool-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .tool-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .tool-card p {
+      margin: 0 0 16px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .tool-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tool-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .final-note {
+      margin-top: 22px;
+      padding: 20px 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(124,156,255,0.18);
+      background: rgba(124,156,255,0.06);
+      color: var(--soft);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .metrics,
+      .rights-grid,
+      .tools-grid {
         grid-template-columns: 1fr;
       }
 
@@ -262,103 +435,107 @@
         grid-template-columns: 1fr;
       }
 
-      .rights-top {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
       .hero,
       .section {
-        padding: 22px;
+        padding: 24px;
+      }
+
+      .container {
+        width: min(var(--max), calc(100% - 20px));
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <section class="hero">
+
+    <div class="topbar">
       <div class="brand">
-        <span class="brand-dot"></span>
+        <span class="brand-mark"></span>
         <span>JCenterS Studio</span>
       </div>
+      <div class="topnote">Hybrid Production / Estimate</div>
+    </div>
 
+    <section class="hero">
+      <div class="eyebrow">AI + CGI + Compositing Pipeline</div>
       <h1>Предварительная укрупненная смета</h1>
-      <p class="subtitle">
-        Hybrid production / AI + CGI + compositing pipeline для производства
-        двух рекламных роликов с акцентом на высокий визуальный уровень, стабильность изображения
-        и аккуратную продуктовую подачу.
+      <p class="hero-sub">
+        Производство двух коротких рекламных роликов для продуктов
+        «Пинта» и «Монокап» с использованием гибридного пайплайна:
+        AI, CGI, compositing и постобработка под высокий визуальный уровень
+        и рекламную продуктовую подачу.
       </p>
 
-      <div class="meta">
-        <div class="meta-card">
-          <div class="meta-label">Проект</div>
+      <div class="hero-grid">
+        <div class="hero-card">
+          <div class="meta-title">Проект</div>
           <div class="meta-value">2 ролика по 10 секунд</div>
         </div>
-        <div class="meta-card">
-          <div class="meta-label">Продукты</div>
-          <div class="meta-value">Пинта + Монокап</div>
-        </div>
-        <div class="meta-card">
-          <div class="meta-label">Производственный подход</div>
-          <div class="meta-value">Hybrid pipeline</div>
+        <div class="hero-card">
+          <div class="meta-title">Продукты</div>
+          <div class="meta-value">Пинта «Орешек со сгущенкой» + Монокап «Орешек со сгущенкой»</div>
         </div>
       </div>
     </section>
 
-    <div class="grid">
-      <section class="section">
-        <h2>Описание проекта</h2>
-        <p>
-          В рамках проекта предполагается производство двух коротких рекламных роликов
-          с использованием hybrid production pipeline, сочетающего AI, CGI и compositing-инструменты.
-        </p>
-        <p>
-          Подход формируется исходя из требуемого quality bar, визуального уровня референсов
-          и задачи получить результат, сопоставимый с high-end food / product communication.
-        </p>
-        <p>
-          В стоимость включены основные этапы подготовки, производства и финализации проекта:
-          анализ задачи и сценария, определение оптимального production pipeline, подбор инструментов
-          и подходов под конкретные сцены, тестирование визуальных решений, создание и сборка материалов,
-          графические и compositing-доработки, cleanup, монтажная сборка, финальная постобработка,
-          supervision и координация производственного процесса.
-        </p>
+    <section class="section">
+      <h2>Описание проекта</h2>
+      <p>
+        В рамках проекта предполагается производство двух коротких рекламных роликов
+        с использованием hybrid production pipeline, сочетающего AI, CGI и compositing-инструменты.
+      </p>
+      <p>
+        Подход формируется исходя из требуемого quality bar, визуального уровня референсов
+        и задачи получить результат, сопоставимый с high-end food / product communication.
+      </p>
+      <p>
+        В укрупненную стоимость включены основные этапы подготовки, производства и финализации:
+        анализ задачи и сценария, определение оптимального production pipeline, подбор инструментов
+        под конкретные сцены, тестирование визуальных решений, создание и сборка материалов,
+        графические и compositing-доработки, cleanup, монтажная сборка, финальная постобработка,
+        supervision и координация производственного процесса.
+      </p>
 
-        <div class="badge-row">
-          <span class="badge">Preproduction</span>
-          <span class="badge">Production</span>
-          <span class="badge">Postproduction</span>
-          <span class="badge">CGI</span>
-          <span class="badge">Compositing</span>
-          <span class="badge">Cleanup</span>
-          <span class="badge">Supervision</span>
+      <div class="chips">
+        <div class="chip">Preproduction</div>
+        <div class="chip">Look Development</div>
+        <div class="chip">AI Workflow</div>
+        <div class="chip">CGI / Product Graphics</div>
+        <div class="chip">Compositing</div>
+        <div class="chip">Cleanup</div>
+        <div class="chip">Postproduction</div>
+        <div class="chip">Supervision</div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Базовая стоимость</div>
+          <div class="metric-value">930 000 ₽</div>
+          <div class="metric-sub">Территория: Россия</div>
         </div>
-      </section>
-
-      <section class="section">
-        <h2>Итог</h2>
-
-        <div class="total-card">
-          <div class="total-label">Итого по территории Россия</div>
-          <div class="total-value">930 000 ₽</div>
+        <div class="metric">
+          <div class="metric-label">Формат проекта</div>
+          <div class="metric-value">2 × 10s</div>
+          <div class="metric-sub">Два отдельных рекламных ролика</div>
         </div>
-
-        <div class="footer-note">
-          Смета предварительная и укрупненная. Финальный расчет может быть уточнен
-          после фиксации deliverables, форматов и итогового production pipeline.
+        <div class="metric">
+          <div class="metric-label">Production model</div>
+          <div class="metric-value">Hybrid</div>
+          <div class="metric-sub">AI + CGI + compositing pipeline</div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
 
-    <section class="section" style="margin-top: 28px;">
+    <section class="section">
       <h2>Смета по этапам</h2>
 
       <div class="estimate-list">
         <div class="estimate-item">
           <div>
-            <h3>1. Препродакшн / pipeline setup</h3>
+            <h3>1. Препродакшн / Pipeline Setup</h3>
             <p>
-              Разбор задачи, сценария и кадров, определение оптимального production pipeline,
+              Разбор задачи, сценария и кадров, определение оптимального hybrid pipeline,
               подбор инструментов под нужный уровень визуала, look development, тестирование
               визуальных и технических подходов, подготовка проекта к производству.
             </p>
@@ -390,7 +567,7 @@
 
         <div class="estimate-item">
           <div>
-            <h3>4. Постпродакшн / финализация / supervision</h3>
+            <h3>4. Постпродакшн / Финализация / Supervision</h3>
             <p>
               Финальная доработка материалов, контроль качества, сборка итоговых версий,
               подготовка master-материалов, project supervision и координация производственного процесса.
@@ -401,35 +578,96 @@
       </div>
     </section>
 
-    <section class="section" style="margin-top: 28px;">
-      <h2>Опции по расширению территории прав на 3 года</h2>
+    <section class="section">
+      <h2>3D / AI Libraries & Tools</h2>
+      <p>
+        Для достижения нужного визуального уровня проект предполагает гибридный набор инструментов.
+        Конкретный пайплайн уточняется под сцены, но в укрупненную модель заложена работа
+        с 3D, AI и compositing-средой.
+      </p>
 
-      <div class="rights">
-        <div class="rights-item">
-          <div class="rights-top">
-            <div class="rights-title">Россия</div>
-            <div class="rights-add">включено</div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <h3>3D / CGI</h3>
+          <p>Инструменты для продуктовой графики, сцен, объектов, света, камер и точечных CGI-доработок.</p>
+          <div class="tool-list">
+            <span class="tool-tag">Blender</span>
+            <span class="tool-tag">Cinema 4D</span>
+            <span class="tool-tag">Unreal Engine 5</span>
+            <span class="tool-tag">Octane / Redshift</span>
+            <span class="tool-tag">KitBash-like assets</span>
+            <span class="tool-tag">Custom product assets</span>
           </div>
-          <div class="rights-total">Итого: 930 000 ₽</div>
         </div>
 
-        <div class="rights-item">
-          <div class="rights-top">
-            <div class="rights-title">Россия + Беларусь</div>
-            <div class="rights-add">+70 000 ₽</div>
+        <div class="tool-card">
+          <h3>AI Workflow</h3>
+          <p>Генерация, стилизация, вариативность, разработка визуальных решений и ускорение production-процесса.</p>
+          <div class="tool-list">
+            <span class="tool-tag">ComfyUI</span>
+            <span class="tool-tag">Stable Diffusion</span>
+            <span class="tool-tag">Image / Video Gen</span>
+            <span class="tool-tag">Control-based workflows</span>
+            <span class="tool-tag">Upscale / Enhancement</span>
           </div>
-          <div class="rights-total">Итого: 1 000 000 ₽</div>
         </div>
 
-        <div class="rights-item">
-          <div class="rights-top">
-            <div class="rights-title">Россия + СНГ</div>
-            <div class="rights-add">+170 000 ₽</div>
+        <div class="tool-card">
+          <h3>Compositing / Finish</h3>
+          <p>Финальная сборка, cleanup, цвет, контроль изображения, экспорт мастер-версий и постобработка.</p>
+          <div class="tool-list">
+            <span class="tool-tag">After Effects</span>
+            <span class="tool-tag">DaVinci Resolve</span>
+            <span class="tool-tag">Photoshop</span>
+            <span class="tool-tag">Cleanup</span>
+            <span class="tool-tag">Retouch</span>
+            <span class="tool-tag">Master Output</span>
           </div>
-          <div class="rights-total">Итого: 1 100 000 ₽</div>
         </div>
       </div>
     </section>
+
+    <section class="section">
+      <h2>Опции по расширению территории прав на 3 года</h2>
+
+      <div class="rights-grid">
+        <div class="rights-card featured">
+          <div class="rights-label">Базовая территория</div>
+          <div class="rights-title">Россия</div>
+          <div class="rights-add">включено в базовую стоимость</div>
+          <div class="rights-total">930 000 ₽</div>
+          <div class="rights-desc">
+            Базовый пакет прав в рамках территории Россия.
+          </div>
+        </div>
+
+        <div class="rights-card">
+          <div class="rights-label">Расширение территории</div>
+          <div class="rights-title">Россия + Беларусь</div>
+          <div class="rights-add">+70 000 ₽</div>
+          <div class="rights-total">1 000 000 ₽</div>
+          <div class="rights-desc">
+            Опция расширения территории использования на Беларусь.
+          </div>
+        </div>
+
+        <div class="rights-card">
+          <div class="rights-label">Расширение территории</div>
+          <div class="rights-title">Россия + СНГ</div>
+          <div class="rights-add">+170 000 ₽</div>
+          <div class="rights-total">1 100 000 ₽</div>
+          <div class="rights-desc">
+            Расширенный пакет прав на территорию стран СНГ.
+          </div>
+        </div>
+      </div>
+
+      <div class="final-note">
+        Смета предварительная и укрупненная. Финальный расчет может быть уточнен
+        после фиксации deliverables, форматов и итогового production pipeline.
+      </div>
+    </section>
+
   </div>
 </body>
 </html>
