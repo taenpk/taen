@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JCenterS — AI / Hybrid Production Estimate</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #121a30;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #f5f7fb;
+      --muted: #b5bfd6;
+      --accent: #8ab4ff;
+      --accent-2: #7ef0c5;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(138, 180, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(126, 240, 197, 0.12), transparent 24%),
+        linear-gradient(180deg, #08101f 0%, #0f172b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+
+    .hero {
+      padding: 40px;
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 20px rgba(138, 180, 255, 0.55);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      max-width: 840px;
+      font-size: 18px;
+      color: var(--muted);
+      margin: 0 0 28px;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .meta-card {
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+    }
+
+    .meta-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      margin-top: 28px;
+    }
+
+    .section {
+      padding: 30px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(138, 180, 255, 0.12);
+      border: 1px solid rgba(138, 180, 255, 0.2);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .estimate-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .estimate-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+    }
+
+    .estimate-item h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .estimate-item p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+      align-self: start;
+    }
+
+    .total-card {
+      margin-top: 18px;
+      padding: 22px 24px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(138, 180, 255, 0.16), rgba(126, 240, 197, 0.12));
+      border: 1px solid rgba(138, 180, 255, 0.24);
+    }
+
+    .total-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .total-value {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .rights {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .rights-item {
+      padding: 18px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .rights-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .rights-title {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .rights-add {
+      font-weight: 800;
+      color: var(--accent-2);
+      white-space: nowrap;
+    }
+
+    .rights-total {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 26px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .grid,
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .estimate-item {
+        grid-template-columns: 1fr;
+      }
+
+      .rights-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero,
+      .section {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>JCenterS Studio</span>
+      </div>
+
+      <h1>Предварительная укрупненная смета</h1>
+      <p class="subtitle">
+        Hybrid production / AI + CGI + compositing pipeline для производства
+        двух рекламных роликов с акцентом на высокий визуальный уровень, стабильность изображения
+        и аккуратную продуктовую подачу.
+      </p>
+
+      <div class="meta">
+        <div class="meta-card">
+          <div class="meta-label">Проект</div>
+          <div class="meta-value">2 ролика по 10 секунд</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Продукты</div>
+          <div class="meta-value">Пинта + Монокап</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-label">Производственный подход</div>
+          <div class="meta-value">Hybrid pipeline</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="section">
+        <h2>Описание проекта</h2>
+        <p>
+          В рамках проекта предполагается производство двух коротких рекламных роликов
+          с использованием hybrid production pipeline, сочетающего AI, CGI и compositing-инструменты.
+        </p>
+        <p>
+          Подход формируется исходя из требуемого quality bar, визуального уровня референсов
+          и задачи получить результат, сопоставимый с high-end food / product communication.
+        </p>
+        <p>
+          В стоимость включены основные этапы подготовки, производства и финализации проекта:
+          анализ задачи и сценария, определение оптимального production pipeline, подбор инструментов
+          и подходов под конкретные сцены, тестирование визуальных решений, создание и сборка материалов,
+          графические и compositing-доработки, cleanup, монтажная сборка, финальная постобработка,
+          supervision и координация производственного процесса.
+        </p>
+
+        <div class="badge-row">
+          <span class="badge">Preproduction</span>
+          <span class="badge">Production</span>
+          <span class="badge">Postproduction</span>
+          <span class="badge">CGI</span>
+          <span class="badge">Compositing</span>
+          <span class="badge">Cleanup</span>
+          <span class="badge">Supervision</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Итог</h2>
+
+        <div class="total-card">
+          <div class="total-label">Итого по территории Россия</div>
+          <div class="total-value">930 000 ₽</div>
+        </div>
+
+        <div class="footer-note">
+          Смета предварительная и укрупненная. Финальный расчет может быть уточнен
+          после фиксации deliverables, форматов и итогового production pipeline.
+        </div>
+      </section>
+    </div>
+
+    <section class="section" style="margin-top: 28px;">
+      <h2>Смета по этапам</h2>
+
+      <div class="estimate-list">
+        <div class="estimate-item">
+          <div>
+            <h3>1. Препродакшн / pipeline setup</h3>
+            <p>
+              Разбор задачи, сценария и кадров, определение оптимального production pipeline,
+              подбор инструментов под нужный уровень визуала, look development, тестирование
+              визуальных и технических подходов, подготовка проекта к производству.
+            </p>
+          </div>
+          <div class="price">220 000 ₽</div>
+        </div>
+
+        <div class="estimate-item">
+          <div>
+            <h3>2. Production ролика 1</h3>
+            <p>
+              Создание и сборка визуала с использованием AI, CGI и compositing-инструментов,
+              графические доработки, cleanup, монтажная и визуальная сборка первого ролика.
+            </p>
+          </div>
+          <div class="price">260 000 ₽</div>
+        </div>
+
+        <div class="estimate-item">
+          <div>
+            <h3>3. Production ролика 2</h3>
+            <p>
+              Создание и сборка визуала с использованием AI, CGI и compositing-инструментов,
+              графические доработки, cleanup, монтажная и визуальная сборка второго ролика.
+            </p>
+          </div>
+          <div class="price">260 000 ₽</div>
+        </div>
+
+        <div class="estimate-item">
+          <div>
+            <h3>4. Постпродакшн / финализация / supervision</h3>
+            <p>
+              Финальная доработка материалов, контроль качества, сборка итоговых версий,
+              подготовка master-материалов, project supervision и координация производственного процесса.
+            </p>
+          </div>
+          <div class="price">190 000 ₽</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top: 28px;">
+      <h2>Опции по расширению территории прав на 3 года</h2>
+
+      <div class="rights">
+        <div class="rights-item">
+          <div class="rights-top">
+            <div class="rights-title">Россия</div>
+            <div class="rights-add">включено</div>
+          </div>
+          <div class="rights-total">Итого: 930 000 ₽</div>
+        </div>
+
+        <div class="rights-item">
+          <div class="rights-top">
+            <div class="rights-title">Россия + Беларусь</div>
+            <div class="rights-add">+70 000 ₽</div>
+          </div>
+          <div class="rights-total">Итого: 1 000 000 ₽</div>
+        </div>
+
+        <div class="rights-item">
+          <div class="rights-top">
+            <div class="rights-title">Россия + СНГ</div>
+            <div class="rights-add">+170 000 ₽</div>
+          </div>
+          <div class="rights-total">Итого: 1 100 000 ₽</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
