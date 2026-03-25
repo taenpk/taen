@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCenterS | Cinematic Production Estimate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #030305;
+            --accent-primary: #8b5cf6; /* JCenterS Purple */
+            --accent-secondary: #ec4899; /* Cinematic Pink */
+            --accent-tertiary: #f97316; /* Orange */
+            --card-bg: rgba(15, 15, 20, 0.6);
+            --card-border: rgba(255, 255, 255, 0.06);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: #e2e8f0;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+        }
+
+        /* Tech/CG Grid Background */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 80%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Ambient Light Glow */
+        .ambient-glow {
+            position: fixed;
+            top: -20vh;
+            left: 20vw;
+            width: 60vw;
+            height: 60vh;
+            background: var(--accent-primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-glow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.1; }
+            100% { transform: scale(1.2) translate(5%, 5%); opacity: 0.2; }
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 10px; }
+
+        /* Premium Cinematic Cards */
+        .premium-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .premium-card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+
+        .premium-card:hover::before { opacity: 1; }
+
+        .feature-card {
+            background: linear-gradient(180deg, rgba(20,20,25,0.8) 0%, rgba(10,10,12,0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05), 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .number-glow {
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .separator-line {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+            margin: 4rem 0;
+        }
+
+        /* Reveal Animation Classes */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-500/30 selection:text-white">
+
+    <div class="bg-grid"></div>
+    <div class="ambient-glow"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-4 mix-blend-difference">
+        <div class="max-w-7xl mx-auto flex justify-between items-center premium-card px-8 py-4 bg-black/20">
+            <div class="text-xl md:text-2xl font-bold font-display tracking-[0.2em] uppercase text-purple-500">
+                JCenterS
+            </div>
+            <div class="hidden md:flex space-x-10 text-xs uppercase tracking-[0.15em] font-medium text-gray-400">
+                <a href="#about" class="hover:text-purple-400 transition-colors">Проект</a>
+                <a href="#pipeline" class="hover:text-purple-400 transition-colors">Пайплайн</a>
+                <a href="#estimate" class="hover:text-purple-400 transition-colors">Смета</a>
+            </div>
+            <div class="text-[9px] text-gray-500 uppercase tracking-[0.2em] hidden sm:block font-bold">
+                EST. 2026
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="about" class="min-h-screen flex items-center justify-center pt-20 px-6 relative">
+        <div class="max-w-5xl mx-auto text-center z-10">
+            <div class="reveal inline-flex items-center space-x-3 bg-purple-500/10 border border-purple-500/20 px-5 py-2 rounded-full mb-10 backdrop-blur-md">
+                <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
+                <span class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-purple-200 font-medium">Hybrid production / AI + CG pipeline</span>
+            </div>
+            
+            <h1 class="reveal delay-100 text-5xl md:text-7xl lg:text-8xl font-black mb-8 font-display tracking-tighter leading-[1.1]">
+                HIGH-END<br>
+                <span class="text-gradient">VISUALS</span>
+            </h1>
+            
+            <p class="reveal delay-200 text-gray-400 text-base md:text-xl max-w-3xl mx-auto leading-relaxed font-light">
+                Производство 2 роликов по 10 секунд. Продукты: пинта и монокап <span class="text-white font-medium">«Орешек со сгущенкой»</span>.<br><br>
+                Использование hybrid production pipeline, сочетающего AI, CG и compositing-инструменты для результата, сопоставимого с <span class="text-purple-300">high-end food / product communication</span>.
+            </p>
+            
+            <!-- Reference-style Cards -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto reveal delay-300">
+                <div class="feature-card group">
+                    <span class="text-3xl mb-4 transform group-hover:scale-110 transition-transform duration-300">🧬</span>
+                    <span class="text-[9px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-1">Approach</span>
+                    <span class="text-sm md:text-base font-bold text-white tracking-wide">AI + CG</span>
+                </div>
+                <div class="feature-card group">
+                    <span class="text-3xl mb-4 transform group-hover:scale-110 transition-transform duration-300">💎</span>
+                    <span class="text-[9px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-1">Quality</span>
+                    <span class="text-sm md:text-base font-bold text-white tracking-wide">High-End</span>
+                </div>
+                <div class="feature-card group">
+                    <span class="text-3xl mb-4 transform group-hover:scale-110 transition-transform duration-300">⏱️</span>
+                    <span class="text-[9px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-1">Format</span>
+                    <span class="text-sm md:text-base font-bold text-white tracking-wide">2 × 10 sec</span>
+                </div>
+                <div class="feature-card group">
+                    <span class="text-3xl mb-4 transform group-hover:scale-110 transition-transform duration-300">🎬</span>
+                    <span class="text-[9px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-1">Delivery</span>
+                    <span class="text-sm md:text-base font-bold text-white tracking-wide">Master Files</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="separator-line"></div>
+
+    <!-- Pipeline Section -->
+    <section id="pipeline" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16 reveal">
+                <h2 class="text-2xl md:text-4xl font-display font-bold mb-4 uppercase tracking-wide text-white">Состав работ</h2>
+                <p class="text-gray-500 font-light text-lg">Комплексный подход от концепта до финала</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-sm">
+                <div class="space-y-5 reveal delay-100 premium-card p-8">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-3xl text-purple-500 font-display font-bold opacity-50">01</span>
+                        <h3 class="text-white font-bold uppercase tracking-widest text-sm">Prep</h3>
+                    </div>
+                    <div class="h-[1px] w-full bg-gradient-to-r from-purple-500/50 to-transparent"></div>
+                    <p class="text-gray-400 font-light leading-relaxed text-base">
+                        Анализ задачи и сценария, определение оптимального production pipeline, подбор инструментов и подходов под конкретные сцены, тестирование визуальных решений.
+                    </p>
+                </div>
+
+                <div class="space-y-5 reveal delay-200 premium-card p-8">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-3xl text-pink-500 font-display font-bold opacity-50">02</span>
+                        <h3 class="text-white font-bold uppercase tracking-widest text-sm">Production</h3>
+                    </div>
+                    <div class="h-[1px] w-full bg-gradient-to-r from-pink-500/50 to-transparent"></div>
+                    <p class="text-gray-400 font-light leading-relaxed text-base">
+                        Создание и сборка материалов с использованием AI и CG-инструментов, графические доработки, соблюдение точности продуктовой подачи.
+                    </p>
+                </div>
+
+                <div class="space-y-5 reveal delay-300 premium-card p-8">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-3xl text-orange-500 font-display font-bold opacity-50">03</span>
+                        <h3 class="text-white font-bold uppercase tracking-widest text-sm">Finish</h3>
+                    </div>
+                    <div class="h-[1px] w-full bg-gradient-to-r from-orange-500/50 to-transparent"></div>
+                    <p class="text-gray-400 font-light leading-relaxed text-base">
+                        Compositing-доработки, cleanup, монтажная сборка, финальная постобработка, supervision и координация производственного процесса.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estimate Section -->
+    <section id="estimate" class="py-24 px-6 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-20 text-center md:text-right reveal">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4 uppercase tracking-widest text-white">Детализация сметы</h2>
+                <div class="inline-block h-1 w-32 bg-gradient-to-r md:bg-gradient-to-l from-purple-500 to-transparent"></div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Row 1 -->
+                <div class="premium-card p-8 flex flex-col md:flex-row justify-between items-start md:items-center group reveal">
+                    <div class="mb-6 md:mb-0 md:pr-12">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                            <div class="text-[10px] text-purple-400 font-bold uppercase tracking-[0.2em]">Phase 01</div>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">Препродакшн / Pipeline Setup</h3>
+                        <p class="text-base text-gray-400 max-w-3xl font-light leading-relaxed">Разбор задачи, сценария и кадров, определение оптимального hybrid pipeline, подбор инструментов под нужный уровень визуала, look development, тестирование визуальных и технических подходов, подготовка проекта к производству.</p>
+                    </div>
+                    <div class="text-3xl font-display font-bold text-white whitespace-nowrap">220 000 <span class="text-purple-500 text-xl">₽</span></div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="premium-card p-8 flex flex-col md:flex-row justify-between items-start md:items-center group reveal delay-100">
+                    <div class="mb-6 md:mb-0 md:pr-12">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-pink-500"></div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase tracking-[0.2em]">Phase 02</div>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">Production Ролика №1</h3>
+                        <p class="text-base text-gray-400 max-w-3xl font-light leading-relaxed">Создание и сборка визуала с использованием AI, CG и compositing-инструментов, графические доработки, cleanup, монтажная и визуальная сборка первого ролика.</p>
+                    </div>
+                    <div class="text-3xl font-display font-bold text-white whitespace-nowrap">260 000 <span class="text-pink-500 text-xl">₽</span></div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="premium-card p-8 flex flex-col md:flex-row justify-between items-start md:items-center group reveal delay-200">
+                    <div class="mb-6 md:mb-0 md:pr-12">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-pink-500"></div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase tracking-[0.2em]">Phase 03</div>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">Production Ролика №2</h3>
+                        <p class="text-base text-gray-400 max-w-3xl font-light leading-relaxed">Создание и сборка визуала с использованием AI, CG и compositing-инструментов, графические доработки, cleanup, монтажная и визуальная сборка второго ролика.</p>
+                    </div>
+                    <div class="text-3xl font-display font-bold text-white whitespace-nowrap">260 000 <span class="text-pink-500 text-xl">₽</span></div>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="premium-card p-8 flex flex-col md:flex-row justify-between items-start md:items-center group reveal delay-300">
+                    <div class="mb-6 md:mb-0 md:pr-12">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div>
+                            <div class="text-[10px] text-orange-400 font-bold uppercase tracking-[0.2em]">Phase 04</div>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-3 tracking-wide">Постпродакшн / Supervision</h3>
+                        <p class="text-base text-gray-400 max-w-3xl font-light leading-relaxed">Финальная доработка материалов, контроль качества, сборка итоговых версий, подготовка master-материалов, project supervision и координация производственного процесса.</p>
+                    </div>
+                    <div class="text-3xl font-display font-bold text-white whitespace-nowrap">190 000 <span class="text-orange-500 text-xl">₽</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="separator-line"></div>
+
+    <!-- Total Section -->
+    <section id="total" class="py-20 px-6 relative overflow-hidden">
+        <!-- Intense glow for total -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[100px] z-0 pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-[10px] uppercase tracking-[0.4em] text-gray-400 mb-6 font-bold">Total Investment</h2>
+                <div class="text-7xl md:text-9xl font-black font-display number-glow text-white mb-6">930K</div>
+                <div class="inline-block border border-white/10 rounded-full px-6 py-2 bg-white/5 backdrop-blur-md">
+                    <p class="text-gray-300 uppercase tracking-widest text-xs font-medium">Территория: <span class="text-white">Россия</span></p>
+                </div>
+            </div>
+
+            <div class="space-y-4 max-w-2xl mx-auto reveal delay-200">
+                <div class="premium-card p-6 md:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-white font-medium text-lg">Россия + Беларусь</span>
+                        <span class="text-xs text-gray-500 tracking-widest uppercase mt-1">Права на 3 года</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-purple-400 border border-purple-500/30 px-3 py-1.5 rounded-full font-bold">+ 70 000 ₽</span>
+                        <span class="font-display font-bold text-xl text-white">1 000 000 ₽</span>
+                    </div>
+                </div>
+
+                <div class="premium-card p-6 md:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-white font-medium text-lg">Россия + СНГ</span>
+                        <span class="text-xs text-gray-500 tracking-widest uppercase mt-1">Права на 3 года</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-pink-400 border border-pink-500/30 px-3 py-1.5 rounded-full font-bold">+ 170 000 ₽</span>
+                        <span class="font-display font-bold text-xl text-white">1 100 000 ₽</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-24 text-center reveal delay-300 pb-10">
+                <div class="inline-block w-10 h-10 border-t border-l border-purple-500/50 mb-8 transform -rotate-45"></div>
+                <div class="text-[10px] text-gray-600 uppercase tracking-[0.3em] font-display">
+                    JCenterS Creative Studio &copy; 2026
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth reveal animation on scroll
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+
+        revealElements.forEach(el => {
+            revealOnScroll.observe(el);
+        });
+    </script>
+</body>
+</html>
